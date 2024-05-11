@@ -16,6 +16,8 @@
 		F87160342BEF532100229971 /* Swipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160332BEF532100229971 /* Swipe */; };
 		F87160362BEF532100229971 /* UIComponentSwipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160352BEF532100229971 /* UIComponentSwipe */; };
 		F87160392BEF541200229971 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87160382BEF541200229971 /* Components.swift */; };
+		F87160412BEF6FE200229971 /* Swipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160402BEF6FE200229971 /* Swipe */; };
+		F87160432BEF6FE200229971 /* UIComponentSwipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160422BEF6FE200229971 /* UIComponentSwipe */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +37,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F87160412BEF6FE200229971 /* Swipe in Frameworks */,
+				F87160432BEF6FE200229971 /* UIComponentSwipe in Frameworks */,
 				F87160342BEF532100229971 /* Swipe in Frameworks */,
 				F87160362BEF532100229971 /* UIComponentSwipe in Frameworks */,
 			);
@@ -109,6 +113,8 @@
 			packageProductDependencies = (
 				F87160332BEF532100229971 /* Swipe */,
 				F87160352BEF532100229971 /* UIComponentSwipe */,
+				F87160402BEF6FE200229971 /* Swipe */,
+				F87160422BEF6FE200229971 /* UIComponentSwipe */,
 			);
 			productName = SwipeExapmple;
 			productReference = F87160192BEF51C400229971 /* SwipeExapmple.app */;
@@ -139,7 +145,7 @@
 			);
 			mainGroup = F87160102BEF51C400229971;
 			packageReferences = (
-				F87160322BEF532100229971 /* XCLocalSwiftPackageReference "../.." */,
+				F871603F2BEF6FE200229971 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = F871601A2BEF51C400229971 /* Products */;
 			projectDirPath = "";
@@ -394,9 +400,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		F87160322BEF532100229971 /* XCLocalSwiftPackageReference "../.." */ = {
+		F871603F2BEF6FE200229971 /* XCLocalSwiftPackageReference ".." */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../..;
+			relativePath = ..;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -406,6 +412,14 @@
 			productName = Swipe;
 		};
 		F87160352BEF532100229971 /* UIComponentSwipe */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UIComponentSwipe;
+		};
+		F87160402BEF6FE200229971 /* Swipe */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Swipe;
+		};
+		F87160422BEF6FE200229971 /* UIComponentSwipe */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UIComponentSwipe;
 		};
