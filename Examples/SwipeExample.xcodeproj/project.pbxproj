@@ -3,139 +3,146 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F871601D2BEF51C400229971 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F871601C2BEF51C400229971 /* AppDelegate.swift */; };
-		F871601F2BEF51C400229971 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F871601E2BEF51C400229971 /* SceneDelegate.swift */; };
-		F87160212BEF51C400229971 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87160202BEF51C400229971 /* ViewController.swift */; };
-		F87160242BEF51C400229971 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F87160222BEF51C400229971 /* Main.storyboard */; };
-		F87160262BEF51C600229971 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F87160252BEF51C600229971 /* Assets.xcassets */; };
-		F87160292BEF51C600229971 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F87160272BEF51C600229971 /* LaunchScreen.storyboard */; };
-		F87160342BEF532100229971 /* Swipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160332BEF532100229971 /* Swipe */; };
-		F87160362BEF532100229971 /* UIComponentSwipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160352BEF532100229971 /* UIComponentSwipe */; };
-		F87160392BEF541200229971 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87160382BEF541200229971 /* Components.swift */; };
-		F87160412BEF6FE200229971 /* Swipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160402BEF6FE200229971 /* Swipe */; };
-		F87160432BEF6FE200229971 /* UIComponentSwipe in Frameworks */ = {isa = PBXBuildFile; productRef = F87160422BEF6FE200229971 /* UIComponentSwipe */; };
+		F87160572BEFCB8200229971 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87160562BEFCB8200229971 /* AppDelegate.swift */; };
+		F87160592BEFCB8200229971 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87160582BEFCB8200229971 /* SceneDelegate.swift */; };
+		F871605E2BEFCB8200229971 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F871605C2BEFCB8200229971 /* Main.storyboard */; };
+		F87160602BEFCB8300229971 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F871605F2BEFCB8300229971 /* Assets.xcassets */; };
+		F87160632BEFCB8300229971 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F87160612BEFCB8300229971 /* LaunchScreen.storyboard */; };
+		F871606B2BEFCBAA00229971 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F871606A2BEFCBA900229971 /* ViewController.swift */; };
+		F87160702BEFCBBD00229971 /* MockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F871606D2BEFCBBD00229971 /* MockData.swift */; };
+		F87160712BEFCBBD00229971 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F871606F2BEFCBBD00229971 /* Components.swift */; };
+		F871C7832BEFCDE10084CDEF /* Swipe in Frameworks */ = {isa = PBXBuildFile; productRef = F871C7822BEFCDE10084CDEF /* Swipe */; };
+		F871C7852BEFCDE10084CDEF /* UIComponentSwipe in Frameworks */ = {isa = PBXBuildFile; productRef = F871C7842BEFCDE10084CDEF /* UIComponentSwipe */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F87160192BEF51C400229971 /* SwipeExapmple.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeExapmple.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F871601C2BEF51C400229971 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F871601E2BEF51C400229971 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		F87160202BEF51C400229971 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		F87160232BEF51C400229971 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F87160252BEF51C600229971 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F87160282BEF51C600229971 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		F871602A2BEF51C600229971 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F87160382BEF541200229971 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		F87160532BEFCB8200229971 /* SwipeExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F87160562BEFCB8200229971 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F87160582BEFCB8200229971 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		F871605D2BEFCB8200229971 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F871605F2BEFCB8300229971 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F87160622BEFCB8300229971 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F87160642BEFCB8300229971 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F871606A2BEFCBA900229971 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F871606D2BEFCBBD00229971 /* MockData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockData.swift; sourceTree = "<group>"; };
+		F871606F2BEFCBBD00229971 /* Components.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		F871C7812BEFCD400084CDEF /* Swipe */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Swipe; path = ..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F87160162BEF51C400229971 /* Frameworks */ = {
+		F87160502BEFCB8200229971 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F87160412BEF6FE200229971 /* Swipe in Frameworks */,
-				F87160432BEF6FE200229971 /* UIComponentSwipe in Frameworks */,
-				F87160342BEF532100229971 /* Swipe in Frameworks */,
-				F87160362BEF532100229971 /* UIComponentSwipe in Frameworks */,
+				F871C7832BEFCDE10084CDEF /* Swipe in Frameworks */,
+				F871C7852BEFCDE10084CDEF /* UIComponentSwipe in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F87160102BEF51C400229971 = {
+		F871604A2BEFCB8200229971 = {
 			isa = PBXGroup;
 			children = (
-				F871601B2BEF51C400229971 /* SwipeExapmple */,
-				F871601A2BEF51C400229971 /* Products */,
-				F87160302BEF522B00229971 /* Frameworks */,
+				F87160552BEFCB8200229971 /* SwipeExample */,
+				F87160542BEFCB8200229971 /* Products */,
+				F871C7802BEFCD400084CDEF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		F871601A2BEF51C400229971 /* Products */ = {
+		F87160542BEFCB8200229971 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F87160192BEF51C400229971 /* SwipeExapmple.app */,
+				F87160532BEFCB8200229971 /* SwipeExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		F871601B2BEF51C400229971 /* SwipeExapmple */ = {
+		F87160552BEFCB8200229971 /* SwipeExample */ = {
 			isa = PBXGroup;
 			children = (
-				F87160372BEF540800229971 /* Components */,
-				F871601C2BEF51C400229971 /* AppDelegate.swift */,
-				F871601E2BEF51C400229971 /* SceneDelegate.swift */,
-				F87160202BEF51C400229971 /* ViewController.swift */,
-				F87160222BEF51C400229971 /* Main.storyboard */,
-				F87160252BEF51C600229971 /* Assets.xcassets */,
-				F87160272BEF51C600229971 /* LaunchScreen.storyboard */,
-				F871602A2BEF51C600229971 /* Info.plist */,
+				F871606E2BEFCBBD00229971 /* Components */,
+				F871606C2BEFCBBD00229971 /* Data */,
+				F87160562BEFCB8200229971 /* AppDelegate.swift */,
+				F87160582BEFCB8200229971 /* SceneDelegate.swift */,
+				F871606A2BEFCBA900229971 /* ViewController.swift */,
+				F871605C2BEFCB8200229971 /* Main.storyboard */,
+				F871605F2BEFCB8300229971 /* Assets.xcassets */,
+				F87160612BEFCB8300229971 /* LaunchScreen.storyboard */,
+				F87160642BEFCB8300229971 /* Info.plist */,
 			);
-			path = SwipeExapmple;
+			path = SwipeExample;
 			sourceTree = "<group>";
 		};
-		F87160302BEF522B00229971 /* Frameworks */ = {
+		F871606C2BEFCBBD00229971 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				F871606D2BEFCBBD00229971 /* MockData.swift */,
 			);
-			name = Frameworks;
+			path = Data;
 			sourceTree = "<group>";
 		};
-		F87160372BEF540800229971 /* Components */ = {
+		F871606E2BEFCBBD00229971 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				F87160382BEF541200229971 /* Components.swift */,
+				F871606F2BEFCBBD00229971 /* Components.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		F871C7802BEFCD400084CDEF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F871C7812BEFCD400084CDEF /* Swipe */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F87160182BEF51C400229971 /* SwipeExapmple */ = {
+		F87160522BEFCB8200229971 /* SwipeExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F871602D2BEF51C600229971 /* Build configuration list for PBXNativeTarget "SwipeExapmple" */;
+			buildConfigurationList = F87160672BEFCB8300229971 /* Build configuration list for PBXNativeTarget "SwipeExample" */;
 			buildPhases = (
-				F87160152BEF51C400229971 /* Sources */,
-				F87160162BEF51C400229971 /* Frameworks */,
-				F87160172BEF51C400229971 /* Resources */,
+				F871604F2BEFCB8200229971 /* Sources */,
+				F87160502BEFCB8200229971 /* Frameworks */,
+				F87160512BEFCB8200229971 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = SwipeExapmple;
+			name = SwipeExample;
 			packageProductDependencies = (
-				F87160332BEF532100229971 /* Swipe */,
-				F87160352BEF532100229971 /* UIComponentSwipe */,
-				F87160402BEF6FE200229971 /* Swipe */,
-				F87160422BEF6FE200229971 /* UIComponentSwipe */,
+				F871C7822BEFCDE10084CDEF /* Swipe */,
+				F871C7842BEFCDE10084CDEF /* UIComponentSwipe */,
 			);
-			productName = SwipeExapmple;
-			productReference = F87160192BEF51C400229971 /* SwipeExapmple.app */;
+			productName = SwipeExample;
+			productReference = F87160532BEFCB8200229971 /* SwipeExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F87160112BEF51C400229971 /* Project object */ = {
+		F871604B2BEFCB8200229971 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
-					F87160182BEF51C400229971 = {
+					F87160522BEFCB8200229971 = {
 						CreatedOnToolsVersion = 15.2;
 					};
 				};
 			};
-			buildConfigurationList = F87160142BEF51C400229971 /* Build configuration list for PBXProject "SwipeExapmple" */;
+			buildConfigurationList = F871604E2BEFCB8200229971 /* Build configuration list for PBXProject "SwipeExample" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -143,59 +150,59 @@
 				en,
 				Base,
 			);
-			mainGroup = F87160102BEF51C400229971;
+			mainGroup = F871604A2BEFCB8200229971;
 			packageReferences = (
-				F871603F2BEF6FE200229971 /* XCLocalSwiftPackageReference ".." */,
 			);
-			productRefGroup = F871601A2BEF51C400229971 /* Products */;
+			productRefGroup = F87160542BEFCB8200229971 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F87160182BEF51C400229971 /* SwipeExapmple */,
+				F87160522BEFCB8200229971 /* SwipeExample */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F87160172BEF51C400229971 /* Resources */ = {
+		F87160512BEFCB8200229971 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F87160292BEF51C600229971 /* LaunchScreen.storyboard in Resources */,
-				F87160262BEF51C600229971 /* Assets.xcassets in Resources */,
-				F87160242BEF51C400229971 /* Main.storyboard in Resources */,
+				F87160632BEFCB8300229971 /* LaunchScreen.storyboard in Resources */,
+				F87160602BEFCB8300229971 /* Assets.xcassets in Resources */,
+				F871605E2BEFCB8200229971 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F87160152BEF51C400229971 /* Sources */ = {
+		F871604F2BEFCB8200229971 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F87160212BEF51C400229971 /* ViewController.swift in Sources */,
-				F87160392BEF541200229971 /* Components.swift in Sources */,
-				F871601D2BEF51C400229971 /* AppDelegate.swift in Sources */,
-				F871601F2BEF51C400229971 /* SceneDelegate.swift in Sources */,
+				F871606B2BEFCBAA00229971 /* ViewController.swift in Sources */,
+				F87160702BEFCBBD00229971 /* MockData.swift in Sources */,
+				F87160712BEFCBBD00229971 /* Components.swift in Sources */,
+				F87160572BEFCB8200229971 /* AppDelegate.swift in Sources */,
+				F87160592BEFCB8200229971 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		F87160222BEF51C400229971 /* Main.storyboard */ = {
+		F871605C2BEFCB8200229971 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F87160232BEF51C400229971 /* Base */,
+				F871605D2BEFCB8200229971 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		F87160272BEF51C600229971 /* LaunchScreen.storyboard */ = {
+		F87160612BEFCB8300229971 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				F87160282BEF51C600229971 /* Base */,
+				F87160622BEFCB8300229971 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -203,7 +210,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		F871602B2BEF51C600229971 /* Debug */ = {
+		F87160652BEFCB8300229971 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -266,7 +273,7 @@
 			};
 			name = Debug;
 		};
-		F871602C2BEF51C600229971 /* Release */ = {
+		F87160662BEFCB8300229971 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -322,26 +329,28 @@
 			};
 			name = Release;
 		};
-		F871602E2BEF51C600229971 /* Debug */ = {
+		F87160682BEFCB8300229971 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YNJLN87BST;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SwipeExapmple/Info.plist;
+				INFOPLIST_FILE = SwipeExample/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wwdc14yh.SwipeExapmple;
+				PRODUCT_BUNDLE_IDENTIFIER = wwdc14yh.SwipeExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -349,26 +358,28 @@
 			};
 			name = Debug;
 		};
-		F871602F2BEF51C600229971 /* Release */ = {
+		F87160692BEFCB8300229971 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YNJLN87BST;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SwipeExapmple/Info.plist;
+				INFOPLIST_FILE = SwipeExample/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = wwdc14yh.SwipeExapmple;
+				PRODUCT_BUNDLE_IDENTIFIER = wwdc14yh.SwipeExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -379,51 +390,36 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F87160142BEF51C400229971 /* Build configuration list for PBXProject "SwipeExapmple" */ = {
+		F871604E2BEFCB8200229971 /* Build configuration list for PBXProject "SwipeExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F871602B2BEF51C600229971 /* Debug */,
-				F871602C2BEF51C600229971 /* Release */,
+				F87160652BEFCB8300229971 /* Debug */,
+				F87160662BEFCB8300229971 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F871602D2BEF51C600229971 /* Build configuration list for PBXNativeTarget "SwipeExapmple" */ = {
+		F87160672BEFCB8300229971 /* Build configuration list for PBXNativeTarget "SwipeExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F871602E2BEF51C600229971 /* Debug */,
-				F871602F2BEF51C600229971 /* Release */,
+				F87160682BEFCB8300229971 /* Debug */,
+				F87160692BEFCB8300229971 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		F871603F2BEF6FE200229971 /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		F87160332BEF532100229971 /* Swipe */ = {
+		F871C7822BEFCDE10084CDEF /* Swipe */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Swipe;
 		};
-		F87160352BEF532100229971 /* UIComponentSwipe */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = UIComponentSwipe;
-		};
-		F87160402BEF6FE200229971 /* Swipe */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Swipe;
-		};
-		F87160422BEF6FE200229971 /* UIComponentSwipe */ = {
+		F871C7842BEFCDE10084CDEF /* UIComponentSwipe */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = UIComponentSwipe;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = F87160112BEF51C400229971 /* Project object */;
+	rootObject = F871604B2BEFCB8200229971 /* Project object */;
 }

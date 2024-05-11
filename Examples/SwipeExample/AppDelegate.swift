@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  SwipeExapmple
+//  SwipeExample
 //
 //  Created by y H on 2024/5/11.
 //

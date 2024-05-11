@@ -74,7 +74,7 @@ class SwipeActionWrapView: UIView {
     let horizontalEdge: SwipeHorizontalEdge
     let config: SwipeConfig
     var totalGap: CGFloat {
-        CGFloat(actions.count - 1) * config.gap
+        CGFloat(actions.count - 1) * config.itemSpacing
     }
     var preferredWidth: CGFloat {
         (preferredContentWidth + sideInset + totalGap)
@@ -208,7 +208,7 @@ class SwipeActionWrapView: UIView {
         let previousFrames = views.map { $0.frame }
         for (index, (subview, subviewSize)) in zip(views, sizes).enumerated() {
             // layout subviews
-            let gap = index == 0 ? 0 : config.gap
+            let gap = index == 0 ? 0 : config.itemSpacing
             let fixedWidth = subviewSize + (edgeView == subview ? sideInset : 0)
             let offsetX: CGFloat
             if isLeft {
@@ -256,7 +256,7 @@ class SwipeActionWrapView: UIView {
             let makeAnimator = {
                 self.animator?.stopAnimation(true)
                 let previousExpandedViewFrame = self.expandedView?.frame ?? .zero
-                let relativeInitialVelocity = CGVector(dx: SwipeTransitionCurve.relativeVelocity(forVelocity: xVelocity, from: previousExpandedViewFrame.width, to: expandedViewFrame.width), dy: 0)
+                let relativeInitialVelocity = CGVector(dx: SwipeTransitionCurve.initialAnimationVelocity(for: xVelocity, from: previousExpandedViewFrame.width, to: expandedViewFrame.width), dy: 0)
                 let timingParameters = UISpringTimingParameters(damping: 1, response: self.config.defaultTransitionDuration, initialVelocity: relativeInitialVelocity)
                 let animator = UIViewPropertyAnimator(duration: 0, timingParameters: timingParameters)
                 self.animator = animator

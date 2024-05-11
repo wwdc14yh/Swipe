@@ -4,30 +4,32 @@ import Swipe
 import Foundation
 import UIComponent
 
-public struct SwipeActionsComponent: Component {
+public struct SwipeComponent: Component {
     public let component: any Component
-    
+
     @Environment(\.swipeConfig)
     public var config: SwipeConfig
-    
+
     public var actions: [any SwipeAction]
-    
+
     public init(component: any Component, @SwipeActionBuilder _ actionsBuilder: () -> [any SwipeAction]) {
         self.component = component
-        self.actions = actionsBuilder()
+        actions = actionsBuilder()
     }
-    
-    public func layout(_ constraint: Constraint) -> SwipeActionsRenderNode {
+
+    public func layout(_ constraint: Constraint) -> SwipeRenderNode {
         let renderNode = component.layout(constraint)
-        return SwipeActionsRenderNode(size: renderNode.size.bound(to: constraint), 
-                                      component: component,
-                                      content: renderNode,
-                                      actions: actions,
-                                      config: config)
+        return SwipeRenderNode(
+            size: renderNode.size.bound(to: constraint),
+            component: component,
+            content: renderNode,
+            actions: actions,
+            config: config
+        )
     }
 }
 
-public struct SwipeActionsRenderNode: RenderNode {
+public struct SwipeRenderNode: RenderNode {
     /// The size of the render node.
     public let size: CGSize
 
@@ -36,31 +38,30 @@ public struct SwipeActionsRenderNode: RenderNode {
 
     /// The rendered content of the component.
     public let content: any RenderNode
-    
+
     public let actions: [any SwipeAction]
-    
+
     public let config: SwipeConfig
-    
-    /// The identifier for the render node, if it has one.
+
     public var id: String? {
         content.id
     }
-    
+
+    public var animator: Animator? {
+        content.animator
+    }
+
     public var reuseStrategy: ReuseStrategy {
         content.reuseStrategy
     }
-    
-    public var defaultReuseKey: String {
-        content.defaultReuseKey
-    }
-    
-    public func updateView(_ view: SwipeView<ComponentView>) {
+
+    public func updateView(_ view: SwipeView) {
         view.config = config
         view.actions = actions
-        view.contentView.engine.reloadWithExisting(component: component, renderNode: content)
+        (view.contentView as! ComponentView).engine.reloadWithExisting(component: component, renderNode: content)
     }
-    
-    public func makeView() -> SwipeView<ComponentView> {
+
+    public func makeView() -> SwipeView {
         let componentView = ComponentView()
         componentView.engine.reloadWithExisting(component: component, renderNode: content)
         return .init(contentView: componentView)
@@ -79,7 +80,6 @@ public struct SwipeConfigEnvironmentKey: EnvironmentKey {
         }
     }
 }
-
 
 public extension EnvironmentValues {
     /// The `SwipeConfig` instance for the current environment.
@@ -100,12 +100,12 @@ public extension Component {
     }
 }
 
-
 public extension Component {
-    func swipeActions(@SwipeActionBuilder _ actionsBuilder: () -> [any SwipeAction]) -> SwipeActionsComponent {
-        SwipeActionsComponent(component: self, actionsBuilder)
+    func swipeActions(@SwipeActionBuilder _ actionsBuilder: () -> [any SwipeAction]) -> SwipeComponent {
+        SwipeComponent(component: self, actionsBuilder)
     }
-    func swipeActions(_ actions: [any SwipeAction]) -> SwipeActionsComponent {
-        SwipeActionsComponent(component: self) { actions }
+
+    func swipeActions(_ actions: [any SwipeAction]) -> SwipeComponent {
+        SwipeComponent(component: self) { actions }
     }
 }

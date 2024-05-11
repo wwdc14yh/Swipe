@@ -38,7 +38,7 @@ public protocol SwipeAction {
 }
 
 public extension SwipeAction {
-    var swipeView: SwipeView<UIView>? {
+    var swipeView: SwipeView? {
         sequence(first: view.superview, next: { $0?.superview }).compactMap { $0 as? SwipeView }.first
     }
     

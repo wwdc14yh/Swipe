@@ -40,10 +40,13 @@ public enum SwipeTransitionCurve: Equatable {
         }
     }
     
-    /// Calculates the relative velocity needed for the initial velocity of the animation.
-    internal static func relativeVelocity(forVelocity velocity: CGFloat, from currentValue: CGFloat, to targetValue: CGFloat) -> CGFloat {
-        guard currentValue - targetValue != 0 else { return 0 }
-        return velocity / (targetValue - currentValue)
+    internal static func initialAnimationVelocity(for gestureXvelocity: CGFloat, from currentValue: CGFloat, to targetValue: CGFloat) -> CGFloat {
+        var animationXvelocity: CGFloat = 0
+        let xDistance = targetValue - currentValue
+        if xDistance != 0 {
+            animationXvelocity = gestureXvelocity / xDistance
+        }
+        return min(10, max(-10, animationXvelocity))
     }
 
 }
