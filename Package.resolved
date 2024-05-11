@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "uicomponent",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lkzhao/UIComponent.git",
+      "state" : {
+        "revision" : "a88e30f820a8efaabb94062d1515349a9dad2a5b",
+        "version" : "3.0.5"
+      }
+    }
+  ],
+  "version" : 2
+}
