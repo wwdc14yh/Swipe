@@ -32,6 +32,10 @@ class ViewController: UIViewController {
         Group(title: "Swipe custom styles") {
             VStack(spacing: 10, alignItems: .stretch) {
                 Cell(title: "Rounded corners 1")
+                    .tappableView { [unowned self] in
+                        guard let swipeView = componentView.visibleView(id: "Rounded corners 1") as? SwipeView else { return }
+                        swipeView.openSwipeAction(with: .right, transition: .animated(duration: 0.5, curve: .easeInOut))
+                    }
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
@@ -47,6 +51,10 @@ class ViewController: UIViewController {
                         clipsToBounds: false
                     ))
                 Cell(title: "Rounded corners 2")
+                    .tappableView { [unowned self] in
+                        guard let swipeView = componentView.visibleView(id: "Rounded corners 2") as? SwipeView else { return }
+                        swipeView.openSwipeAction(with: .left, transition: .animated(duration: 0.5, curve: .easeInOut))
+                    }
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
@@ -102,19 +110,20 @@ class ViewController: UIViewController {
                             }
 
                             // MARK: Right
-
-                            SwipeActionComponent(identifier: "more", horizontalEdge: .right, backgroundColor: UIColor(red: 0.553, green: 0.553, blue: 0.553, alpha: 1.0)) {
-                                VStack(justifyContent: .center, alignItems: .center) {
-                                    Image(systemName: "ellipsis.circle.fill")
-                                        .tintColor(.white)
-                                    Text("More", font: .systemFont(ofSize: 16, weight: .medium))
-                                        .textColor(.white)
-                                }
-                                .inset(h: 10)
-                                .minSize(width: 74, height: 0)
-                            } actionHandler: { [unowned self] completion, action, form in
-                                handlerEmail(action, offset: offset, completion: completion, eventForm: form)
-                            }
+                            
+                            customSwipeAction(item: value)
+//                            SwipeActionComponent(identifier: "more", horizontalEdge: .right, backgroundColor: UIColor(red: 0.553, green: 0.553, blue: 0.553, alpha: 1.0)) {
+//                                VStack(justifyContent: .center, alignItems: .center) {
+//                                    Image(systemName: "ellipsis.circle.fill")
+//                                        .tintColor(.white)
+//                                    Text("More", font: .systemFont(ofSize: 16, weight: .medium))
+//                                        .textColor(.white)
+//                                }
+//                                .inset(h: 10)
+//                                .minSize(width: 74, height: 0)
+//                            } actionHandler: { [unowned self] completion, action, form in
+//                                handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+//                            }
                             SwipeActionComponent(identifier: "flag", horizontalEdge: .right, backgroundColor: UIColor(red: 0.996, green: 0.624, blue: 0.024, alpha: 1.0)) {
                                 VStack(justifyContent: .center, alignItems: .center) {
                                     Image(systemName: "flag.fill")
@@ -221,6 +230,45 @@ class ViewController: UIViewController {
                 cornerRadius: cornerRadius
             ),
         ]
+    }
+    
+    func customSwipeAction(item: EmailData) -> SwipeActionComponent {
+        var completionAfterHandler: SwipeAction.CompletionAfterHandler?
+        var primaryMenuSwipeAction = SwipeActionComponent.custom(
+            horizontalEdge: .right,
+            backgroundColor: UIColor(red: 0.553, green: 0.553, blue: 0.553, alpha: 1.0),
+            alertBuild: {
+                SwipeActionContent(image: UIImage(systemName: "info.circle.fill"), text: "This is custom action", alignment: .ltr, tintColor: .white)
+            },
+            actionHandler: { completion, _, form in
+                if form == .alert {
+                    completion(.close)
+                } else {
+                    completionAfterHandler = completion
+                }
+            }
+        )
+        primaryMenuSwipeAction.component = SwipeActionContent(image: UIImage(systemName: "ellipsis.circle.fill"), text: "More", alignment: .ttb, tintColor: .white)
+            .primaryMenu {
+                let actionHandler: UIActionHandler = { action in
+                    if action.title == "hold" {
+                        completionAfterHandler?(.hold)
+                    } else if action.title == "close" {
+                        completionAfterHandler?(.close)
+                    } else if action.title == "swipeFull" {
+                        completionAfterHandler?(.swipeFull(nil))
+                    } else if action.title == "alert" {
+                        completionAfterHandler?(.alert)
+                    }
+                }
+                return UIMenu(title: "Custom after handle (\(item.from))", children: [
+                    UIAction(title: "hold", handler: actionHandler),
+                    UIAction(title: "close", handler: actionHandler),
+                    UIAction(title: "swipeFull", handler: actionHandler),
+                    UIAction(title: "alert", handler: actionHandler),
+                ])
+            }
+        return primaryMenuSwipeAction
     }
 
     func remindSwipeAction() -> SwipeActionComponent {

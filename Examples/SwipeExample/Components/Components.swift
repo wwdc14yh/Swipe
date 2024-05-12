@@ -45,6 +45,7 @@ struct Cell: ComponentBuilder {
         }
         .inset(15)
         .minSize(height: 44)
+        .id(title)
     }
 }
 
@@ -78,8 +79,8 @@ struct Group: ComponentBuilder {
                         }
                     }
                     component
-                        .view()
-                        .clipsToBounds(!maskedCorners.isEmpty)
+                        .eraseToAnyComponent()
+                        .clipsToBounds(true)
                         .with(\.layer.cornerRadius, maskedCorners.isEmpty ? 0 : cornerRadius)
                         .with(\.layer.cornerCurve, .continuous)
                         .with(\.layer.maskedCorners, maskedCorners)
@@ -132,6 +133,7 @@ struct EmailComponent: ComponentBuilder {
         .inset(left: 0, rest: 10)
         .animator(TransformAnimator())
         .id(data.id)
+        .reuseStrategy(.key("email"))
     }
 }
 
