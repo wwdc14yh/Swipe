@@ -46,7 +46,7 @@ public struct SwipeConfig {
         cornerRadius: CGFloat = 0,
         clipsToBounds: Bool = true,
         defaultTransitionCurve: SwipeTransitionCurve = .easeInOut,
-        defaultTransitionDuration: TimeInterval = 0.4,
+        defaultTransitionDuration: TimeInterval = 0.3,
         whenSwipeCloseOtherSwipeAction: Bool = true
     ) {
         self.allowsFullSwipe = allowsFullSwipe
@@ -139,7 +139,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
     }
 
     var _animator: UIViewPropertyAnimator?
-    
+
     func defaultTransitionCurve(xVelocity: CGFloat, from: CGFloat, to: CGFloat) -> SwipeTransitionCurve {
         let initialVelocity = SwipeTransitionCurve.initialAnimationVelocity(for: xVelocity, from: from, to: to)
         let parameters = UISpringTimingParameters(dampingRatio: 1, initialVelocity: CGVector(dx: initialVelocity, dy: 0))
@@ -462,16 +462,21 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
     public func closeSwipeAction(transition: SwipeTransition) {
         updateRevealOffsetInternal(offset: 0.0, xVelocity: 0, transition: transition, anchorAction: nil)
     }
-    
+
     public func openSwipeAction(with horizontalEdge: SwipeHorizontalEdge, transition: SwipeTransition) {
+        if config.whenSwipeCloseOtherSwipeAction {
+            closeOtherSwipeAction(transition: transition)
+        }
         if horizontalEdge.isLeft, revealOffset <= 0 {
             setupLeftActionsContainerView()
             if let leftSwipeActionsContainerView {
+                updateRevealOffsetInternal(offset: 1, xVelocity: 0, transition: .immediate, anchorAction: nil)
                 updateRevealOffsetInternal(offset: leftSwipeActionsContainerView.preferredWidth + config.gap, xVelocity: 0, transition: transition, anchorAction: nil)
             }
         } else if !horizontalEdge.isLeft, revealOffset >= 0 {
             setupRightActionsContainerView()
             if let rightSwipeActionsContainerView {
+                updateRevealOffsetInternal(offset: -1, xVelocity: 0, transition: .immediate, anchorAction: nil)
                 updateRevealOffsetInternal(offset: -(rightSwipeActionsContainerView.preferredWidth + config.gap), xVelocity: 0, transition: transition, anchorAction: nil)
             }
         }

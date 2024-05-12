@@ -39,13 +39,24 @@ extension SwipeActionComponent {
 
 struct Cell: ComponentBuilder {
     let title: String
+    let subtitle: String
+    init(title: String = "", subtitle: String = "") {
+        self.title = title
+        self.subtitle = subtitle
+    }
+
     func build() -> some Component {
-        HStack(alignItems: .center) {
-            Text(title, font: .preferredFont(forTextStyle: .body))
+        VStack(spacing: 5, alignItems: .start) {
+            if !title.isEmpty {
+                Text(title, font: .systemFont(ofSize: 17, weight: .semibold))
+            }
+            if !subtitle.isEmpty {
+                Text(subtitle, font: .systemFont(ofSize: 15, weight: .regular))
+            }
         }
         .inset(15)
         .minSize(height: 44)
-        .id(title)
+        .id(title + subtitle)
     }
 }
 

@@ -33,9 +33,11 @@ class ViewController: UIViewController {
             VStack(spacing: 10, alignItems: .stretch) {
                 Cell(title: "Rounded corners 1")
                     .tappableView { [unowned self] in
-                        guard let swipeView = componentView.visibleView(id: "Rounded corners 1") as? SwipeView else { return }
+                        guard let componentView = componentView.visibleView(id: "Rounded corners 1") as? ComponentView,
+                              let swipeView = componentView.visibleView(id: "Rounded corners 1") as? SwipeView else { return }
                         swipeView.openSwipeAction(with: .right, transition: .animated(duration: 0.5, curve: .easeInOut))
                     }
+                    .clipsToBounds(false)
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
@@ -50,9 +52,14 @@ class ViewController: UIViewController {
                         cornerRadius: 15,
                         clipsToBounds: false
                     ))
+                    .inset(h: 10)
+                    .view()
+                    .clipsToBounds(true)
+                    .id("Rounded corners 1")
                 Cell(title: "Rounded corners 2")
                     .tappableView { [unowned self] in
-                        guard let swipeView = componentView.visibleView(id: "Rounded corners 2") as? SwipeView else { return }
+                        guard let componentView = componentView.visibleView(id: "Rounded corners 2") as? ComponentView,
+                              let swipeView = componentView.visibleView(id: "Rounded corners 2") as? SwipeView else { return }
                         swipeView.openSwipeAction(with: .left, transition: .animated(duration: 0.5, curve: .easeInOut))
                     }
                     .backgroundColor(.systemGroupedBackground)
@@ -69,6 +76,10 @@ class ViewController: UIViewController {
                         cornerRadius: 15,
                         clipsToBounds: false
                     ))
+                    .inset(h: 10)
+                    .view()
+                    .clipsToBounds(true)
+                    .id("Rounded corners 2")
                 Cell(title: "Rounded corners 3")
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
@@ -84,8 +95,12 @@ class ViewController: UIViewController {
                         cornerRadius: 15,
                         clipsToBounds: false
                     ))
+                    .inset(h: 10)
+                    .view()
+                    .clipsToBounds(true)
+                    .id("Rounded corners 3")
             }
-            .inset(10)
+            .inset(v: 10)
         }
     }
 
@@ -110,20 +125,8 @@ class ViewController: UIViewController {
                             }
 
                             // MARK: Right
-                            
+
                             customSwipeAction(item: value)
-//                            SwipeActionComponent(identifier: "more", horizontalEdge: .right, backgroundColor: UIColor(red: 0.553, green: 0.553, blue: 0.553, alpha: 1.0)) {
-//                                VStack(justifyContent: .center, alignItems: .center) {
-//                                    Image(systemName: "ellipsis.circle.fill")
-//                                        .tintColor(.white)
-//                                    Text("More", font: .systemFont(ofSize: 16, weight: .medium))
-//                                        .textColor(.white)
-//                                }
-//                                .inset(h: 10)
-//                                .minSize(width: 74, height: 0)
-//                            } actionHandler: { [unowned self] completion, action, form in
-//                                handlerEmail(action, offset: offset, completion: completion, eventForm: form)
-//                            }
                             SwipeActionComponent(identifier: "flag", horizontalEdge: .right, backgroundColor: UIColor(red: 0.996, green: 0.624, blue: 0.024, alpha: 1.0)) {
                                 VStack(justifyContent: .center, alignItems: .center) {
                                     Image(systemName: "flag.fill")
@@ -177,7 +180,6 @@ class ViewController: UIViewController {
                 Separator()
                     .inset(left: 30)
             }
-            .components
         }
     }
 
@@ -203,13 +205,13 @@ class ViewController: UIViewController {
             SwipeActionComponent.rounded(
                 horizontalEdge: .left,
                 body: SwipeActionContent(image: UIImage(systemName: "square.and.arrow.up.fill"), text: "", alignment: .ltr, tintColor: .white),
-                backgroundColor: UIColor(red: 255/255.0, green: 149/255.0, blue: 0/255.0, alpha: 1.0),
+                backgroundColor: UIColor(red: 255 / 255.0, green: 149 / 255.0, blue: 0 / 255.0, alpha: 1.0),
                 cornerRadius: cornerRadius
             ),
             SwipeActionComponent.rounded(
                 horizontalEdge: .left,
                 body: SwipeActionContent(image: UIImage(systemName: "video.fill"), text: "", alignment: .ltr, tintColor: .white),
-                backgroundColor: UIColor(red: 0/255.0, green: 122/255.0, blue: 255/255.0, alpha: 1.0),
+                backgroundColor: UIColor(red: 0 / 255.0, green: 122 / 255.0, blue: 255 / 255.0, alpha: 1.0),
                 cornerRadius: cornerRadius
             ),
         ]
@@ -231,7 +233,7 @@ class ViewController: UIViewController {
             ),
         ]
     }
-    
+
     func customSwipeAction(item: EmailData) -> SwipeActionComponent {
         var completionAfterHandler: SwipeAction.CompletionAfterHandler?
         var primaryMenuSwipeAction = SwipeActionComponent.custom(
