@@ -227,13 +227,14 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                     reveal = false
                     handlerActionEvent(action: leftSwipeActionsContainerView.edgeAction, eventFrom: .expanded)
                 } else {
+                    let targetOffset = reveal ? containerViewSize.width : 0.0
                     updateRevealOffsetInternal(
-                        offset: reveal ? containerViewSize.width : 0.0,
+                        offset: targetOffset,
                         xVelocity: xVelocity,
                         transition: .animated(duration: 0, curve: defaultTransitionCurve(xVelocity: xVelocity, from: revealOffset, to: containerViewSize.width)),
                         anchorAction: nil
                     ) { [unowned self] in
-                        guard !(_animator?.isRunning ?? false) else { return }
+                        guard reveal, leftSwipeActionsContainerView.isDisplayingExtendedAction, revealOffset == targetOffset else { return }
                         leftSwipeActionsContainerView.resetExpandedState()
                     }
                 }
@@ -259,13 +260,14 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                     reveal = false
                     handlerActionEvent(action: rightSwipeActionsContainerView.edgeAction, eventFrom: .expanded)
                 } else {
+                    let targetOffset = reveal ? -containerViewSize.width : 0.0
                     updateRevealOffsetInternal(
-                        offset: reveal ? -containerViewSize.width : 0.0,
+                        offset: targetOffset,
                         xVelocity: xVelocity,
                         transition: .animated(duration: 0, curve: defaultTransitionCurve(xVelocity: xVelocity, from: revealOffset, to: -containerViewSize.width)),
                         anchorAction: nil
                     ) { [unowned self] in
-                        guard !(_animator?.isRunning ?? false) else { return }
+                        guard reveal, rightSwipeActionsContainerView.isDisplayingExtendedAction, revealOffset == targetOffset else { return }
                         rightSwipeActionsContainerView.resetExpandedState()
                     }
                 }
