@@ -1,10 +1,11 @@
 # Swipe
 - Add customizable swipe actions to any view.
 - Fine-tune animations and styling to your taste.
+- Supports drag-to-delete and advanced gesture handling.
 - Support custom alert view
 - Programmatically show/hide swipe actions.
 - Completely customizable Swipe content
-- Support [UIComponent](https://github.com/lkzhao/UIComponent)
+- Support [UIComponent](https://github.com/lkzhao/UIComponent) extensions
 
 Customized
 |  <img width="398" alt="snapshot_1" src="https://github.com/wwdc14yh/Swipe/assets/11381801/7ca06ed7-c652-413f-9244-60e4366ba752"> |  <img width="398" alt="snapshot_3" src="https://github.com/wwdc14yh/Swipe/assets/11381801/95014c02-15b9-4d91-b030-1dcc983581ae"> | <img width="398" alt="snapshot_2" src="https://github.com/wwdc14yh/Swipe/assets/11381801/c30fcecc-d80f-4fe3-9b46-6b084bf93598">  |
