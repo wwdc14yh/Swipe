@@ -23,7 +23,7 @@ public enum SwipeActionAfterHandler {
     case alert
 }
 
-public protocol SwipeAction: Equatable {
+public protocol SwipeAction {
     typealias CompletionAfterHandler = (SwipeActionAfterHandler) -> Void
     associatedtype View: UIView
     var identifier: String { get }
@@ -71,7 +71,7 @@ public extension SwipeAction {
 }
 
 extension SwipeAction {
-    static func == (lhs: any SwipeAction, rhs: any SwipeAction) -> Bool {
+    public static func == (lhs: any SwipeAction, rhs: any SwipeAction) -> Bool {
         lhs.identifier == rhs.identifier && lhs.horizontalEdge == rhs.horizontalEdge && lhs.view == rhs.view
     }
 }
