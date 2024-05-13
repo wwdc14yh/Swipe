@@ -24,7 +24,6 @@ class ViewController: UIViewController {
             swipeStyle
             emailSwipe
         }
-        .inset(view.safeAreaInsets)
         .inset(h: 20)
     }
 
@@ -199,6 +198,12 @@ class ViewController: UIViewController {
         super.viewDidLayoutSubviews()
         componentView.frame = view.bounds
     }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        print(view.safeAreaInsets)
+        reloadComponent()
+    }
 
     func leftExampleSwipeActions(_ cornerRadius: CGFloat = 15) -> [any SwipeAction] {
         [
@@ -257,8 +262,8 @@ class ViewController: UIViewController {
                         completionAfterHandler?(.hold)
                     } else if action.title == "close" {
                         completionAfterHandler?(.close)
-                    } else if action.title == "swipeFull" {
-                        completionAfterHandler?(.swipeFull(nil))
+                    } else if action.title == "expanded" {
+                        completionAfterHandler?(.expanded(completed: nil))
                     } else if action.title == "alert" {
                         completionAfterHandler?(.alert)
                     }
@@ -266,7 +271,7 @@ class ViewController: UIViewController {
                 return UIMenu(title: "Custom after handle (\(item.from))", children: [
                     UIAction(title: "hold", handler: actionHandler),
                     UIAction(title: "close", handler: actionHandler),
-                    UIAction(title: "swipeFull", handler: actionHandler),
+                    UIAction(title: "expanded", handler: actionHandler),
                     UIAction(title: "alert", handler: actionHandler),
                 ])
             }
@@ -287,7 +292,7 @@ class ViewController: UIViewController {
             },
             actionHandler: { completion, _, form in
                 if form == .alert {
-                    completion(.swipeFull {})
+                    completion(.expanded(completed: nil))
                 }
             }
         )
@@ -328,7 +333,7 @@ class ViewController: UIViewController {
                 let removed: () -> Void = { [unowned self] in
                     emailData.remove(at: offset)
                 }
-                completion(.swipeFull(removed))
+                completion(.expanded(completed: removed))
             } else {
                 completion(.alert)
             }

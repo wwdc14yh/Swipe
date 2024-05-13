@@ -32,7 +32,7 @@ extension SwipeActionComponent {
             }
             highlightView.backgroundColor = .black.withAlphaComponent(isHighlighted ? 0.3 : 0)
         } actionHandler: { completion, _, _ in
-            completion(.swipeFull(nil))
+            completion(.expanded())
         }
     }
 }
@@ -142,7 +142,6 @@ struct EmailComponent: ComponentBuilder {
         }
         .size(width: .fill)
         .inset(left: 0, rest: 10)
-        .animator(TransformAnimator())
         .id(data.id)
         .reuseStrategy(.key("email"))
     }

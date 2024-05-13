@@ -19,11 +19,11 @@ public enum SwipeActionAfterHandler {
     public typealias TransitionCompleted = () -> Void
     case hold
     case close
-    case swipeFull(TransitionCompleted? = nil)
+    case expanded(completed: TransitionCompleted? = nil)
     case alert
 }
 
-public protocol SwipeAction {
+public protocol SwipeAction: Equatable {
     typealias CompletionAfterHandler = (SwipeActionAfterHandler) -> Void
     associatedtype View: UIView
     var identifier: String { get }
@@ -70,9 +70,9 @@ public extension SwipeAction {
     }
 }
 
-public extension SwipeAction {
+extension SwipeAction {
     static func == (lhs: any SwipeAction, rhs: any SwipeAction) -> Bool {
-        lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier && lhs.horizontalEdge == rhs.horizontalEdge && lhs.view == rhs.view
     }
 }
 

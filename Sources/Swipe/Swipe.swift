@@ -431,7 +431,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
         switch afterHandler {
         case .close:
             closeSwipeAction(transition: defaultTransition)
-        case let .swipeFull(completion):
+        case let .expanded(completion):
             let xVelocity = panRecognizer.lastVelocity.x
             actionWrapViewView.clickedAction = action
             let offset = frame.width + config.gap
