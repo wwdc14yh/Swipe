@@ -13,6 +13,15 @@ public enum SwipeTransition {
             return true
         }
     }
+    
+    var duration: TimeInterval {
+        switch self {
+        case .immediate:
+            return 0.0
+        case .animated(let duration, _):
+            return duration
+        }
+    }
 }
 
 public enum SwipeTransitionCurve: Equatable {

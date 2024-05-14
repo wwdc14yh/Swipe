@@ -2,19 +2,37 @@
 
 import UIKit
 
-class ActionWrapView: UIView {
+class ActionWrapper {
+    let action: any SwipeAction
+    private(set) var didRender: Bool = false
+    lazy var contentView: UIView = {
+        didRender = true
+        return action.makeCotnentView()
+    }()
+    var swipeContentWrapperView: SwipeContentWrapperView? {
+        guard didRender else { return nil }
+        return sequence(first: contentView, next: { $0?.superview }).compactMap { $0 as? SwipeContentWrapperView }.first
+    }
+    
+    init(action: any SwipeAction) {
+        self.action = action
+    }
+}
+
+class ActionWrapperView: UIView {
     var isHighlighted = false {
         didSet { setHighlighted(isHighlighted, transition: .animated(duration: 0.5, curve: .easeOut)) }
     }
 
     let highlightedMaskView = UIView()
     let contentView: UIView
-    let action: any SwipeAction
+    let actionWrapper: ActionWrapper
     let handlerTap: (any SwipeAction) -> Void
+    var action: any SwipeAction { actionWrapper.action }
     
-    init(action: any SwipeAction, customView: UIView? = nil, handlerTap: @escaping (any SwipeAction) -> Void) {
-        self.action = action
-        contentView = customView ?? action.view
+    init(actionWrapper: ActionWrapper, customView: UIView? = nil, handlerTap: @escaping (any SwipeAction) -> Void) {
+        self.actionWrapper = actionWrapper
+        contentView = customView ?? actionWrapper.contentView
         self.handlerTap = handlerTap
         super.init(frame: .zero)
 
@@ -67,10 +85,10 @@ class ActionWrapView: UIView {
     }
 }
 
-class SwipeActionWrapView: UIView {
+class SwipeContentWrapperView: UIView {
     typealias ActionTapHandler = (_ action: any SwipeAction, _ eventForm: SwipeActionEventFrom) -> Void
 
-    let actions: [any SwipeAction]
+    let actions: [ActionWrapper]
     let horizontalEdge: SwipeHorizontalEdge
     let config: SwipeConfig
     var totalGap: CGFloat {
@@ -102,28 +120,32 @@ class SwipeActionWrapView: UIView {
         return size
     }
 
+    var edgeActionWrapper: ActionWrapper {
+        guard let actionWrapper = isLeft ? actions.first : actions.last else { fatalError() }
+        return actionWrapper
+    }
+    
     var edgeAction: any SwipeAction {
-        guard let action = isLeft ? actions.first : actions.last else { fatalError() }
-        return action
+        edgeActionWrapper.action
     }
     
     let preferredContentWidth: CGFloat
     var clickedAction: (any SwipeAction)? = nil
 
     private var isLeft: Bool
-    private let views: [ActionWrapView]
+    private let views: [ActionWrapperView]
     private let sizes: [CGFloat]
     private let actionTapHandler: ActionTapHandler
     private var sideInset: CGFloat = 0
     private var offset: CGFloat = 0
-    private var alertContext: (action: any SwipeAction, alertWrapView: ActionWrapView)? = nil
+    private var alertContext: (actionWrapper: ActionWrapper, alertWrapView: ActionWrapperView)? = nil
     private var isExpanded = false
     private var isComplete = false
     private var expandedView: UIView?
     private var animator: UIViewPropertyAnimator?
     private lazy var feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
   
-    init(actions: [any SwipeAction],
+    init(actions: [ActionWrapper],
         config: SwipeConfig,
         horizontalEdge: SwipeHorizontalEdge,
         fixedHeight: CGFloat,
@@ -131,7 +153,7 @@ class SwipeActionWrapView: UIView {
         let isLeft = horizontalEdge.isLeft
         let actions = isLeft ? actions.reversed() : actions
         let views = actions.map {
-            ActionWrapView(action: $0, handlerTap: { actionTapHandler($0, .tap) })
+            ActionWrapperView(actionWrapper: $0, handlerTap: { actionTapHandler($0, .tap) })
         }
         self.actionTapHandler = actionTapHandler
         let sizes = views.map { floor($0.sizeThatFits(CGSize(width: .infinity, height: fixedHeight)).width) }
@@ -159,10 +181,10 @@ class SwipeActionWrapView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func makeAlert(with action: any SwipeAction, transition: SwipeTransition) {
-        guard let index = actions.firstIndex(where: { $0.isSame(action) }) else { return }
+    func makeAlert(with actionWrapper: ActionWrapper, transition: SwipeTransition) {
+        guard let index = actions.firstIndex(where: { $0.action.isSame(actionWrapper.action) }) else { return }
         let subview = views[index]
-        let alertView = ActionWrapView(action: action, customView: action.makeAlertView()) { [unowned self] in
+        let alertView = ActionWrapperView(actionWrapper: actionWrapper, customView: actionWrapper.action.makeAlertView()) { [unowned self] in
             actionTapHandler($0, .alert)
             cancelAlert(transition: transition)
         }
@@ -173,10 +195,11 @@ class SwipeActionWrapView: UIView {
         transition.update {
             alertView.frame = self.bounds
         }
-        alertContext = (action, alertView)
+        alertContext = (actionWrapper, alertView)
     }
     
-    func makeExpandedView(with action: any SwipeAction, frame: CGRect) -> UIView? {
+    func makeExpandedView(with actionWrapper: ActionWrapper, frame: CGRect) -> UIView? {
+        let action = actionWrapper.action
         guard let expandedView = action.makeExpandedView() else { return nil }
         expandedView.frame = frame
         insertSubview(expandedView, aboveSubview: edgeView)
@@ -197,7 +220,7 @@ class SwipeActionWrapView: UIView {
         }
     }
 
-    func updateOffset(with offset: CGFloat, sideInset: CGFloat, xVelocity: CGFloat, forceSwipeOffset: Bool, anchorAction: (any SwipeAction)?, transition: SwipeTransition) {
+    func updateOffset(with offset: CGFloat, sideInset: CGFloat, xVelocity: CGFloat, forceSwipeOffset: Bool, anchorActionWrapper: ActionWrapper?, transition: SwipeTransition) {
         self.sideInset = sideInset
         self.offset = offset
         self.isComplete = preferredWidth >= offset
@@ -214,7 +237,7 @@ class SwipeActionWrapView: UIView {
             if isLeft {
                 if config.layoutEffect == .drag {
                     offsetX = index == 0 ? floatInterpolate(factor: min(1, factor), start: -preferredWithoutSideInsetContentWidth, end: 0) : previousFrame.maxX
-                } else if config.layoutEffect == .reveal {
+                } else if config.layoutEffect == .border {
                     offsetX = floatInterpolate(factor: min(1, factor), start: previousFrame.minX - (index == 0 ? fixedWidth : -sideInset), end: previousFrame.maxX)
                 } else if config.layoutEffect == .static {
                     offsetX = previousFrame.maxX
@@ -224,7 +247,7 @@ class SwipeActionWrapView: UIView {
             } else {
                 if config.layoutEffect == .drag {
                     offsetX = previousFrame.maxX
-                } else if config.layoutEffect == .reveal {
+                } else if config.layoutEffect == .border {
                     offsetX = floatInterpolate(factor: min(1, factor), start: previousFrame.minX, end: previousFrame.maxX)
                 } else if config.layoutEffect == .static {
                     offsetX = index == 0 ? floatInterpolate(factor: min(1, factor), start: -preferredWidth, end: 0) : previousFrame.maxX
@@ -237,18 +260,17 @@ class SwipeActionWrapView: UIView {
             transition.update {
                 subview.frame = subviewFrame
             }
-//            subviewFrame.origin.x += gap
             previousFrame = subviewFrame
             totalOffsetX += fixedWidth
         }
-        let action: (any SwipeAction)?
+        let actionWrapper: ActionWrapper?
         var swipeFullTransition = transition
         var isExpanded = false
         if factor > boundarySwipeActionFactor, config.allowsFullSwipe {
             isExpanded = true
-            action = anchorAction ?? edgeAction
+            actionWrapper = anchorActionWrapper ?? edgeActionWrapper
         } else {
-            action = nil
+            actionWrapper = nil
         }
 
         let expandedViewFrame: CGRect = isExpanded ? CGRect(origin: .zero, size: CGSize(width: offset, height: frame.height)) : edgeView.frame
@@ -263,7 +285,7 @@ class SwipeActionWrapView: UIView {
                 return animator
             }
             swipeFullTransition = transition.isAnimated ? transition : .animated(duration: 0, curve: .custom(makeAnimator()))
-            if expandedView == nil, config.allowsFullSwipe, let action, let index = actions.firstIndex(where: { $0.isSame(action) }) {
+            if expandedView == nil, config.allowsFullSwipe, let actionWrapper, let index = actions.firstIndex(where: { $0.action.isSame(actionWrapper.action) }) {
                 let initialExpandedViewFrame: CGRect
                 if forceSwipeOffset {
                     if let alertContext {
@@ -274,22 +296,24 @@ class SwipeActionWrapView: UIView {
                 } else {
                     initialExpandedViewFrame = views[index].frame
                 }
-                expandedView = makeExpandedView(with: action, frame: initialExpandedViewFrame)
+                expandedView = makeExpandedView(with: actionWrapper, frame: initialExpandedViewFrame)
             }
         }
         handlerExpanded(transition: swipeFullTransition,
                         additive: !transition.isAnimated,
                         expandedViewFrame: expandedViewFrame,
                         isExpanded: isExpanded,
-                        anchorAction: action)
+                        anchorActionWrapper: actionWrapper)
         cancelAlert(transition: transition.isAnimated ? transition : .animated(duration: 0.15, curve: .easeInOut))
     }
 
-    func handlerExpanded(transition: SwipeTransition, additive: Bool, expandedViewFrame: CGRect, isExpanded: Bool, anchorAction: (any SwipeAction)?) {
+    func handlerExpanded(transition: SwipeTransition, additive: Bool, expandedViewFrame: CGRect, isExpanded: Bool, anchorActionWrapper: ActionWrapper?) {
         guard let expandedView, config.allowsFullSwipe else { return }
         var animateAdditive = false
+        var transition = transition
         if additive && transition.isAnimated && self.isExpanded != isExpanded {
             animateAdditive = true
+            transition = .animated(duration: transition.duration - (transition.duration * 0.1), curve: .easeInOut)
         }
         if animateAdditive {
             transition.updateFrame(with: expandedView, frame: expandedViewFrame)

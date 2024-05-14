@@ -21,10 +21,40 @@ class ViewController: UIViewController {
 
     var component: any Component {
         VStack(spacing: 20) {
+            layoutEffect
             swipeStyle
             emailSwipe
         }
         .inset(h: 20)
+    }
+
+    var layoutEffect: any Component {
+        func configSwipe(_ component: any Component, layoutEffect: SwipeConfig.LayoutEffect) -> any Component {
+            component
+                .swipeAction(leftExampleSwipeActions(0) + rightExampleSwipeActions(0))
+                .swipeConfig(SwipeConfig(
+                    layoutEffect: layoutEffect,
+                    clipsToBounds: false
+                ))
+        }
+        return Group(title: "Swipe layout effect", footnote: "The style of how the action views are exposed during the swipe.") {
+            Join {
+                configSwipe(
+                    Cell(title: "border", subtitle: "The visible action area is equally divide between all action views."),
+                    layoutEffect: .border
+                )
+                configSwipe(
+                    Cell(title: "drag", subtitle: "The visible action area is dragged, pinned to the any view, with each action view fully sized as it is exposed."),
+                    layoutEffect: .drag
+                )
+                configSwipe(
+                    Cell(title: "static", subtitle: "The visible action area sits behind the any view, pinned to the edge of the any scroll view, and is revealed as the any view is dragged aside."),
+                    layoutEffect: .static
+                )
+            } separator: {
+                Separator()
+            }
+        }
     }
 
     var swipeStyle: any Component {
@@ -40,13 +70,12 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeActions {
+                    .swipeAction {
                         leftExampleSwipeActions(0)
                         rightExampleSwipeActions(0)
                     }
                     .swipeConfig(SwipeConfig(
-                        layoutEffect: .static,
-                        itemSpacing: 0,
+                        layoutEffect: .border,
                         gap: 5,
                         cornerRadius: 15,
                         clipsToBounds: false
@@ -64,12 +93,12 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeActions {
+                    .swipeAction {
                         leftExampleSwipeActions()
                         rightExampleSwipeActions()
                     }
                     .swipeConfig(SwipeConfig(
-                        layoutEffect: .reveal,
+                        layoutEffect: .border,
                         itemSpacing: 5,
                         gap: 5,
                         cornerRadius: 15,
@@ -83,7 +112,7 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeActions {
+                    .swipeAction {
                         leftExampleSwipeActions(99)
                         rightExampleSwipeActions(999)
                     }
@@ -104,12 +133,12 @@ class ViewController: UIViewController {
     }
 
     var emailSwipe: any Component {
-        Group(title: "收件箱") {
+        Group(title: "Inbox") {
             Join {
                 for (offset, value) in emailData.enumerated() {
                     EmailComponent(data: value)
-                        .swipeActions {
-                            remindSwipeAction()
+                        .swipeAction {
+                            remindSwipeAction(with: value)
                             SwipeActionComponent(identifier: "read", horizontalEdge: .left, backgroundColor: UIColor(red: 0.008, green: 0.475, blue: 0.996, alpha: 1.0)) {
                                 VStack(justifyContent: .center, alignItems: .center) {
                                     Image(systemName: value.unread ? "envelope.open.fill" : "envelope.fill")
@@ -173,7 +202,7 @@ class ViewController: UIViewController {
                                 }
                             }
                         }
-                        .swipeConfig(SwipeConfig(layoutEffect: .reveal))
+                        .swipeConfig(SwipeConfig(layoutEffect: .border))
                 }
             } separator: {
                 Separator()
@@ -198,7 +227,7 @@ class ViewController: UIViewController {
         super.viewDidLayoutSubviews()
         componentView.frame = view.bounds
     }
-    
+
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         print(view.safeAreaInsets)
@@ -241,7 +270,8 @@ class ViewController: UIViewController {
 
     func customSwipeAction(item: EmailData) -> SwipeActionComponent {
         var completionAfterHandler: SwipeAction.CompletionAfterHandler?
-        var primaryMenuSwipeAction = SwipeActionComponent.custom(
+        var primaryMenuSwipeAction = SwipeActionComponent(
+            identifier: UUID().uuidString,
             horizontalEdge: .right,
             backgroundColor: UIColor(red: 0.553, green: 0.553, blue: 0.553, alpha: 1.0),
             alertBuild: {
@@ -255,7 +285,7 @@ class ViewController: UIViewController {
                 }
             }
         )
-        primaryMenuSwipeAction.component = SwipeActionContent(image: UIImage(systemName: "ellipsis.circle.fill"), text: "More", alignment: .ttb, tintColor: .white)
+        primaryMenuSwipeAction.body = SwipeActionContent(image: UIImage(systemName: "ellipsis.circle.fill"), text: "More", alignment: .ttb, tintColor: .white)
             .primaryMenu {
                 let actionHandler: UIActionHandler = { action in
                     if action.title == "hold" {
@@ -278,18 +308,10 @@ class ViewController: UIViewController {
         return primaryMenuSwipeAction
     }
 
-    func remindSwipeAction() -> SwipeActionComponent {
-        var primaryMenuSwipeAction = SwipeActionComponent.custom(
+    func remindSwipeAction(with emailData: EmailData) -> SwipeActionComponent {
+        var primaryMenuSwipeAction = SwipeActionComponent(
             horizontalEdge: .left,
             backgroundColor: UIColor(red: 0.341, green: 0.333, blue: 0.835, alpha: 1.0),
-            alertBuild: {
-                Text("This is custom action", font: .systemFont(ofSize: 18, weight: .medium))
-                    .textColor(.white)
-                    .adjustsFontSizeToFitWidth(true)
-                    .textAlignment(.center)
-                    .inset(5)
-                    .flex()
-            },
             actionHandler: { completion, _, form in
                 if form == .alert {
                     completion(.expanded(completed: nil))
@@ -305,11 +327,12 @@ class ViewController: UIViewController {
         .inset(h: 10)
         .minSize(width: 74)
         .primaryMenu {
-            let actionHandler: UIActionHandler = { action in
+            let actionHandler: UIActionHandler = { [unowned self] action in
+                guard let swipeView = componentView.visibleView(id: emailData.id) as? SwipeView else { return }
                 if action.title == "Remind me later..." {
-                    primaryMenuSwipeAction.manualHandlerAfter(afterHandler: .alert)
+                    swipeView.manualHandlerAfter(afterHandler: .alert, action: primaryMenuSwipeAction)
                 } else {
-                    primaryMenuSwipeAction.manualHandlerAfter(afterHandler: .close)
+                    swipeView.manualHandlerAfter(afterHandler: .close, action: primaryMenuSwipeAction)
                 }
             }
             return UIMenu(title: "Remind me", children: [
@@ -318,7 +341,16 @@ class ViewController: UIViewController {
                 UIAction(title: "Remind me later...", handler: actionHandler),
             ])
         }
-        primaryMenuSwipeAction.component = primaryMenuComponent
+        let alertComponent = {
+            Text("This is custom action", font: .systemFont(ofSize: 18, weight: .medium))
+                .textColor(.white)
+                .adjustsFontSizeToFitWidth(true)
+                .textAlignment(.center)
+                .inset(5)
+                .flex()
+        }
+        primaryMenuSwipeAction.alert = alertComponent()
+        primaryMenuSwipeAction.body = primaryMenuComponent
         return primaryMenuSwipeAction
     }
 

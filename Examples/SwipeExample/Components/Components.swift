@@ -48,25 +48,47 @@ struct Cell: ComponentBuilder {
     func build() -> some Component {
         VStack(spacing: 5, alignItems: .start) {
             if !title.isEmpty {
-                Text(title, font: .systemFont(ofSize: 17, weight: .semibold))
+                Text(title, font: .systemFont(ofSize: 18, weight: .semibold))
             }
             if !subtitle.isEmpty {
                 Text(subtitle, font: .systemFont(ofSize: 15, weight: .regular))
+                    .textColor(.secondaryLabel)
             }
         }
         .inset(15)
         .minSize(height: 44)
         .id(title + subtitle)
+        .reuseStrategy(.key("cell"))
     }
 }
 
 struct Group: ComponentBuilder {
-    let title: String
+    let title: any Component
+    let footnode: (any Component)?
     let backgroundColor: UIColor
     let cornerRadius: CGFloat
     let body: [any Component]
-    init(title: String, backgroundColor: UIColor = .secondarySystemGroupedBackground, cornerRadius: CGFloat = 15, @ComponentArrayBuilder _ body: () -> [any Component]) {
+    
+    init(title: any Component, footnode: any Component, backgroundColor: UIColor, cornerRadius: CGFloat, body: [any Component]) {
         self.title = title
+        self.footnode = footnode
+        self.backgroundColor = backgroundColor
+        self.cornerRadius = cornerRadius
+        self.body = body
+    }
+    
+    init(title: String, 
+         footnote: String? = nil,
+         backgroundColor: UIColor = .secondarySystemGroupedBackground,
+         cornerRadius: CGFloat = 15,
+         @ComponentArrayBuilder _ body: () -> [any Component]) {
+        var footnode: (any Component)? {
+            guard let footnote else { return nil }
+            return Text(footnote, font: UIFont.preferredFont(forTextStyle: .footnote))
+                .textColor(.secondaryLabel)
+        }
+        self.title = Text(title, font: UIFont.systemFont(ofSize: 20, weight: .bold))
+        self.footnode = footnode
         self.backgroundColor = backgroundColor
         self.cornerRadius = cornerRadius
         self.body = body()
@@ -74,7 +96,7 @@ struct Group: ComponentBuilder {
 
     func build() -> some Component {
         VStack(alignItems: .stretch) {
-            Text(title, font: UIFont.preferredFont(forTextStyle: .headline))
+            title
                 .inset(top: 15, left: 15, bottom: 10, right: 0)
             VStack(alignItems: .stretch) {
                 for (offset, component) in body.enumerated() {
@@ -102,6 +124,10 @@ struct Group: ComponentBuilder {
                     .backgroundColor(backgroundColor)
                     .with(\.layer.cornerRadius, cornerRadius)
                     .with(\.layer.cornerCurve, .continuous)
+            }
+            if let footnode {
+                footnode
+                    .inset(top: 15, left: 15, bottom: 10, right: 0)
             }
         }
         .size(width: .fill)

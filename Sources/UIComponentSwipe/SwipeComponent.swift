@@ -101,11 +101,11 @@ public extension Component {
 }
 
 public extension Component {
-    func swipeActions(@SwipeActionBuilder _ actionsBuilder: () -> [any SwipeAction]) -> SwipeComponent {
+    func swipeAction(@SwipeActionBuilder _ actionsBuilder: () -> [any SwipeAction]) -> SwipeComponent {
         SwipeComponent(component: self, actionsBuilder)
     }
 
-    func swipeActions(_ actions: [any SwipeAction]) -> SwipeComponent {
+    func swipeAction(_ actions: [any SwipeAction]) -> SwipeComponent {
         SwipeComponent(component: self) { actions }
     }
 }
