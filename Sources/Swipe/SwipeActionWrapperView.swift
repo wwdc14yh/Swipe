@@ -322,30 +322,15 @@ class SwipeContentWrapperView: UIView {
         var transition = transition
         if additive && transition.isAnimated && self.isExpanded != isExpanded {
             animateAdditive = true
-            //transition.duration - (transition.duration * 0.1)
-            transition = .animated(duration: transition.duration, curve: .linear)
+            transition = .animated(duration: transition.duration - (transition.duration * 0.1), curve: .easeInOut)
         }
         if animateAdditive {
-            let a = UIViewPropertyAnimator(duration: 1, timingParameters: UISpringTimingParameters())
-            a.addAnimations {
-                expandedView.frame = expandedViewFrame
-                expandedView.setNeedsLayout()
-                expandedView.layoutIfNeeded()
-            }
-            a.startAnimation()
-//            transition.update {
-//                expandedView.frame = expandedViewFrame
-//                expandedView.setNeedsLayout()
-//                expandedView.layoutIfNeeded()
-//            }
-            transition.updateFrame(with: expandedView, frame: expandedViewFrame)
             if config.feedbackEnable {
                 feedbackGenerator.impactOccurred()
                 feedbackGenerator.prepare()
             }
-        } else {
-            transition.updateFrame(with: expandedView, frame: expandedViewFrame)
         }
+        transition.updateFrame(with: expandedView, frame: expandedViewFrame)
         self.isExpanded = isExpanded
     }
 
