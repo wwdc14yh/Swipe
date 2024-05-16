@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct EmailData: Equatable {
     var from: String
@@ -42,5 +43,14 @@ struct EmailData: Equatable {
 extension Calendar {
     static func now(addingDays days: Int) -> Date {
         return Date().addingTimeInterval(Double(days) * 60 * 60 * 24)
+    }
+}
+
+extension UIColor {
+    static let systemColors: [UIColor] = [
+        .systemRed, .systemBlue, .systemPink, .systemTeal, .systemGray, .systemFill, .systemGreen, .systemGreen, .systemYellow, .systemPurple, .systemOrange,
+    ]
+    static func randomSystemColor() -> UIColor {
+        systemColors.randomElement()!
     }
 }

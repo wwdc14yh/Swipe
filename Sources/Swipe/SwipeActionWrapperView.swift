@@ -9,6 +9,7 @@ class ActionWrapper {
         didRender = true
         return action.makeCotnentView()
     }()
+
     var swipeContentWrapperView: SwipeContentWrapperView? {
         guard didRender else { return nil }
         return sequence(first: contentView, next: { $0?.superview }).compactMap { $0 as? SwipeContentWrapperView }.first
@@ -91,16 +92,19 @@ class SwipeContentWrapperView: UIView {
     let actions: [ActionWrapper]
     let horizontalEdge: SwipeHorizontalEdge
     let config: SwipeConfig
-    var totalGap: CGFloat {
+    var totalItemSpacing: CGFloat {
         CGFloat(actions.count - 1) * config.itemSpacing
     }
+
     var preferredWidth: CGFloat {
-        (preferredContentWidth + sideInset + totalGap)
+        preferredContentWidth + sideInset + totalItemSpacing
     }
+
     var preferredWithoutSideInsetContentWidth: CGFloat {
-        preferredContentWidth + totalGap
+        preferredContentWidth + totalItemSpacing
     }
-    var preferredWithoutGapContentWidth: CGFloat {
+
+    var preferredWithoutItemSpacingContentWidth: CGFloat {
         preferredContentWidth + sideInset
     }
 
@@ -115,6 +119,11 @@ class SwipeContentWrapperView: UIView {
         return view
     }
 
+    var edgeViewFrame: CGRect {
+        guard let frame = isLeft ? viewFrames.first : viewFrames.last else { fatalError() }
+        return frame
+    }
+
     var edgeSize: CGFloat {
         guard let size = isLeft ? sizes.first : sizes.last else { fatalError() }
         return size
@@ -124,15 +133,16 @@ class SwipeContentWrapperView: UIView {
         guard let actionWrapper = isLeft ? actions.first : actions.last else { fatalError() }
         return actionWrapper
     }
-    
+
     var edgeAction: any SwipeAction {
         edgeActionWrapper.action
     }
-    
+
     let preferredContentWidth: CGFloat
     var clickedAction: (any SwipeAction)? = nil
 
     private var isLeft: Bool
+    private var viewFrames: [CGRect]
     private let views: [ActionWrapperView]
     private let sizes: [CGFloat]
     private let actionTapHandler: ActionTapHandler
@@ -144,12 +154,14 @@ class SwipeContentWrapperView: UIView {
     private var expandedView: UIView?
     private var animator: UIViewPropertyAnimator?
     private lazy var feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
-  
-    init(actions: [ActionWrapper],
+
+    init(
+        actions: [ActionWrapper],
         config: SwipeConfig,
         horizontalEdge: SwipeHorizontalEdge,
         fixedHeight: CGFloat,
-        actionTapHandler: @escaping ActionTapHandler) {
+        actionTapHandler: @escaping ActionTapHandler
+    ) {
         let isLeft = horizontalEdge.isLeft
         let actions = isLeft ? actions.reversed() : actions
         let views = actions.map {
@@ -159,19 +171,25 @@ class SwipeContentWrapperView: UIView {
         let sizes = views.map { floor($0.sizeThatFits(CGSize(width: .infinity, height: fixedHeight)).width) }
         self.sizes = sizes
         self.views = views
+        viewFrames = .init(repeating: .zero, count: views.count)
         self.actions = actions
         self.config = config
         self.isLeft = isLeft
-        self.preferredContentWidth = sizes.reduce(0) { $0 + $1 }
+        preferredContentWidth = sizes.reduce(0) { $0 + $1 }
         self.horizontalEdge = horizontalEdge
         super.init(frame: .zero)
-        setup()
+        setup(fixedHeight: fixedHeight)
     }
 
-    private func setup() {
+    private func setup(fixedHeight: CGFloat) {
         (isLeft ? views.reversed() : views).forEach { addSubview($0) }
         clipsToBounds = true
-        layer.cornerRadius = config.cornerRadius
+        switch config.cornerRadius {
+        case let .custom(cGFloat):
+            layer.cornerRadius = cGFloat
+        case .round:
+            layer.cornerRadius = fixedHeight / 2
+        }
         if #available(iOS 13.0, *) {
             layer.cornerCurve = .continuous
         }
@@ -228,7 +246,7 @@ class SwipeContentWrapperView: UIView {
         let boundarySwipeActionFactor: CGFloat = 1.0 + expandedTriggerOffset / preferredWidth
         var totalOffsetX: CGFloat = 0
         var previousFrame = CGRect.zero
-        let previousFrames = views.map { $0.frame }
+        let previousFrames = viewFrames
         for (index, (subview, subviewSize)) in zip(views, sizes).enumerated() {
             // layout subviews
             let gap = index == 0 ? 0 : config.itemSpacing
@@ -255,7 +273,7 @@ class SwipeContentWrapperView: UIView {
                     fatalError()
                 }
             }
-            let flexbleWidth = max(fixedWidth, (((offset - totalGap) / preferredWithoutGapContentWidth) * fixedWidth))
+            let flexbleWidth = max(fixedWidth, (((offset - totalItemSpacing) / preferredWithoutItemSpacingContentWidth) * fixedWidth))
             let subviewFrame = CGRect(x: offsetX + gap, y: 0, width: flexbleWidth, height: frame.height)
             transition.update {
                 subview.frame = subviewFrame
@@ -275,16 +293,7 @@ class SwipeContentWrapperView: UIView {
 
         let expandedViewFrame: CGRect = isExpanded ? CGRect(origin: .zero, size: CGSize(width: offset, height: frame.height)) : edgeView.frame
         if self.isExpanded != isExpanded {
-            let makeAnimator = {
-                self.animator?.stopAnimation(true)
-                let previousExpandedViewFrame = self.expandedView?.frame ?? .zero
-                let relativeInitialVelocity = CGVector(dx: SwipeTransitionCurve.initialAnimationVelocity(for: xVelocity, from: previousExpandedViewFrame.width, to: expandedViewFrame.width), dy: 0)
-                let timingParameters = UISpringTimingParameters(damping: 1, response: self.config.defaultTransitionDuration, initialVelocity: relativeInitialVelocity)
-                let animator = UIViewPropertyAnimator(duration: 0, timingParameters: timingParameters)
-                self.animator = animator
-                return animator
-            }
-            swipeFullTransition = transition.isAnimated ? transition : .animated(duration: 0, curve: .custom(makeAnimator()))
+            swipeFullTransition = transition.isAnimated ? transition : .animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve)
             if expandedView == nil, config.allowsFullSwipe, let actionWrapper, let index = actions.firstIndex(where: { $0.action.isSame(actionWrapper.action) }) {
                 let initialExpandedViewFrame: CGRect
                 if forceSwipeOffset {
@@ -313,9 +322,22 @@ class SwipeContentWrapperView: UIView {
         var transition = transition
         if additive && transition.isAnimated && self.isExpanded != isExpanded {
             animateAdditive = true
-            transition = .animated(duration: transition.duration - (transition.duration * 0.1), curve: .easeInOut)
+            //transition.duration - (transition.duration * 0.1)
+            transition = .animated(duration: transition.duration, curve: .linear)
         }
         if animateAdditive {
+            let a = UIViewPropertyAnimator(duration: 1, timingParameters: UISpringTimingParameters())
+            a.addAnimations {
+                expandedView.frame = expandedViewFrame
+                expandedView.setNeedsLayout()
+                expandedView.layoutIfNeeded()
+            }
+            a.startAnimation()
+//            transition.update {
+//                expandedView.frame = expandedViewFrame
+//                expandedView.setNeedsLayout()
+//                expandedView.layoutIfNeeded()
+//            }
             transition.updateFrame(with: expandedView, frame: expandedViewFrame)
             if config.feedbackEnable {
                 feedbackGenerator.impactOccurred()

@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     var layoutEffect: any Component {
         func configSwipe(_ component: any Component, layoutEffect: SwipeConfig.LayoutEffect) -> any Component {
             component
-                .swipeAction(leftExampleSwipeActions(0) + rightExampleSwipeActions(0))
+                .swipeActions(leftExampleSwipeActions(0) + rightExampleSwipeActions(0))
                 .swipeConfig(SwipeConfig(
                     layoutEffect: layoutEffect,
                     clipsToBounds: false
@@ -70,14 +70,14 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeAction {
+                    .swipeActions {
                         leftExampleSwipeActions(0)
                         rightExampleSwipeActions(0)
                     }
                     .swipeConfig(SwipeConfig(
-                        layoutEffect: .border,
+                        layoutEffect: .static,
                         gap: 5,
-                        cornerRadius: 15,
+                        cornerRadius: .custom(15),
                         clipsToBounds: false
                     ))
                     .inset(h: 10)
@@ -93,7 +93,7 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeAction {
+                    .swipeActions {
                         leftExampleSwipeActions()
                         rightExampleSwipeActions()
                     }
@@ -101,7 +101,7 @@ class ViewController: UIViewController {
                         layoutEffect: .border,
                         itemSpacing: 5,
                         gap: 5,
-                        cornerRadius: 15,
+                        cornerRadius: .custom(15),
                         clipsToBounds: false
                     ))
                     .inset(h: 10)
@@ -112,7 +112,7 @@ class ViewController: UIViewController {
                     .backgroundColor(.systemGroupedBackground)
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
-                    .swipeAction {
+                    .swipeActions {
                         leftExampleSwipeActions(99)
                         rightExampleSwipeActions(999)
                     }
@@ -120,7 +120,7 @@ class ViewController: UIViewController {
                         layoutEffect: .drag,
                         itemSpacing: 5,
                         gap: 5,
-                        cornerRadius: 15,
+                        cornerRadius: .custom(15),
                         clipsToBounds: false
                     ))
                     .inset(h: 10)
@@ -137,7 +137,7 @@ class ViewController: UIViewController {
             Join {
                 for (offset, value) in emailData.enumerated() {
                     EmailComponent(data: value)
-                        .swipeAction {
+                        .swipeActions {
                             remindSwipeAction(with: value)
                             SwipeActionComponent(identifier: "read", horizontalEdge: .left, backgroundColor: UIColor(red: 0.008, green: 0.475, blue: 0.996, alpha: 1.0)) {
                                 VStack(justifyContent: .center, alignItems: .center) {

@@ -68,7 +68,6 @@ public struct SwipeActionComponent: SwipeAction {
         )
     }
 
-    /// Builder and backgroundColor func
     public init(
         identifier: String,
         horizontalEdge: SwipeHorizontalEdge,
@@ -89,7 +88,6 @@ public struct SwipeActionComponent: SwipeAction {
         )
     }
 
-    /// Builder func
     public init(
         identifier: String,
         horizontalEdge: SwipeHorizontalEdge,

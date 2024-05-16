@@ -16,6 +16,11 @@ public struct SwipeConfig {
         /// The visible action area sits behind the any view, pinned to the edge of the any scroll view, and is revealed as the any view is dragged aside.
         case `static`
     }
+    
+    public enum CornerRadius {
+        case custom(CGFloat)
+        case round
+    }
 
     /// A Boolean value that indicates whether a full swipe automatically performs the first action. The default is true.
     public var allowsFullSwipe: Bool
@@ -40,7 +45,7 @@ public struct SwipeConfig {
 
     public var whenSwipeCloseOtherSwipeAction: Bool
 
-    public var cornerRadius: CGFloat
+    public var cornerRadius: CornerRadius
     public var clipsToBounds: Bool
 
     public init(
@@ -52,7 +57,7 @@ public struct SwipeConfig {
         layoutEffect: LayoutEffect = .static,
         itemSpacing: CGFloat = 0,
         gap: CGFloat = 0,
-        cornerRadius: CGFloat = 0,
+        cornerRadius: CornerRadius = .custom(0),
         clipsToBounds: Bool = true,
         defaultTransitionCurve: SwipeTransitionCurve = .easeInOut,
         defaultTransitionDuration: TimeInterval = 0.3,

@@ -25,16 +25,20 @@ public enum SwipeActionAfterHandler {
 
 public protocol SwipeAction {
     typealias CompletionAfterHandler = (SwipeActionAfterHandler) -> Void
-
+    associatedtype ContentView: UIView
     var identifier: String { get }
     var horizontalEdge: SwipeHorizontalEdge { get }
     var isEnableFadeTransitionAddedExpandedView: Bool { get }
 
     func configHighlightView(with highlightView: UIView, isHighlighted: Bool)
+    
+    func update(contentView: ContentView)
+    
     func handlerAction(completion: @escaping CompletionAfterHandler, eventFrom: SwipeActionEventFrom)
+    
     func willShow()
 
-    func makeCotnentView() -> UIView
+    func makeCotnentView() -> ContentView
     func makeExpandedView() -> UIView?
     func makeAlertView() -> UIView
 }
@@ -44,6 +48,8 @@ public extension SwipeAction {
 
     func configHighlightView(with _: UIView, isHighlighted _: Bool) {}
 
+    func update(contentView: ContentView) {}
+    
     func makeExpandedView() -> UIView? {
         return nil
     }
@@ -53,9 +59,15 @@ public extension SwipeAction {
     }
 
     func willShow() {}
+    
+    internal func _update(contentView: UIView) {
+        guard let contentView = contentView as? ContentView else { return }
+        update(contentView: contentView)
+    }
 
-    internal func isSame(_ other: any SwipeAction) -> Bool {
-        identifier == other.identifier && horizontalEdge == other.horizontalEdge
+    internal func isSame(_ other: (any SwipeAction)?) -> Bool {
+        guard let other else { return false }
+        return identifier == other.identifier && horizontalEdge == other.horizontalEdge
     }
 }
 

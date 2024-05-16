@@ -83,15 +83,18 @@ extension SwipeTransition {
         return nil
     }
 
-    func updateOriginX(with view: UIView, originX: CGFloat, completion _: ((Bool) -> Void)? = nil) {
+    @discardableResult
+    func updateOriginX(with view: UIView, originX: CGFloat, completion _: ((Bool) -> Void)? = nil) -> UIViewPropertyAnimator? {
         update { view.frame.origin.x = originX }
     }
 
-    func updateFrame(with view: UIView, frame: CGRect, completion: ((Bool) -> Void)? = nil) {
+    @discardableResult
+    func updateFrame(with view: UIView, frame: CGRect, completion: ((Bool) -> Void)? = nil) -> UIViewPropertyAnimator? {
         if view.frame.equalTo(frame) {
             completion?(true)
+            return nil
         } else {
-            update(animation: {
+            return update(animation: {
                 view.frame = frame
             }, completion: completion)
         }
