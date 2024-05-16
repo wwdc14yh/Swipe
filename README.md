@@ -7,9 +7,15 @@
 - Completely customizable Swipe content
 - Support [UIComponent](https://github.com/lkzhao/UIComponent) extensions
 
-Customized
+#### Customize styles
 |  <img width="398" alt="snapshot_1" src="https://github.com/wwdc14yh/Swipe/assets/11381801/7ca06ed7-c652-413f-9244-60e4366ba752"> |  <img width="398" alt="snapshot_3" src="https://github.com/wwdc14yh/Swipe/assets/11381801/95014c02-15b9-4d91-b030-1dcc983581ae"> | <img width="398" alt="snapshot_2" src="https://github.com/wwdc14yh/Swipe/assets/11381801/c30fcecc-d80f-4fe3-9b46-6b084bf93598">  |
 |---|---|---|
+
+#### Layout effects
+| ![snapshot_1](https://github.com/wwdc14yh/Swipe/assets/11381801/269ba162-428d-4780-b258-591342439945) |  ![snapshot_2](https://github.com/wwdc14yh/Swipe/assets/11381801/dfa1e861-19bb-4613-8868-6aa9623da2c2) | ![snapshot_3](https://github.com/wwdc14yh/Swipe/assets/11381801/e3fb29aa-9b4b-48cb-9137-998f92e42ca9) |
+|---|---|---|
+
+## Customize action
 
 Swipe actions will be expanded
 <br>
