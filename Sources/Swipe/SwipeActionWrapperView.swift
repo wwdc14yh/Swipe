@@ -275,6 +275,7 @@ class SwipeContentWrapperView: UIView {
             }
             let flexbleWidth = max(fixedWidth, (((offset - totalItemSpacing) / preferredWithoutItemSpacingContentWidth) * fixedWidth))
             let subviewFrame = CGRect(x: offsetX + gap, y: 0, width: flexbleWidth, height: frame.height)
+            viewFrames[index] = subviewFrame
             transition.update {
                 subview.frame = subviewFrame
             }
@@ -303,7 +304,7 @@ class SwipeContentWrapperView: UIView {
                         initialExpandedViewFrame = previousFrames[index]
                     }
                 } else {
-                    initialExpandedViewFrame = views[index].frame
+                    initialExpandedViewFrame = viewFrames[index]
                 }
                 expandedView = makeExpandedView(with: actionWrapper, frame: initialExpandedViewFrame)
             }
@@ -325,12 +326,15 @@ class SwipeContentWrapperView: UIView {
             transition = .animated(duration: transition.duration - (transition.duration * 0.1), curve: .easeInOut)
         }
         if animateAdditive {
+            animator?.stopAnimation(true)
             if config.feedbackEnable {
                 feedbackGenerator.impactOccurred()
                 feedbackGenerator.prepare()
             }
+            animator = transition.updateFrame(with: expandedView, frame: expandedViewFrame)
+        } else {
+            transition.updateFrame(with: expandedView, frame: expandedViewFrame)
         }
-        transition.updateFrame(with: expandedView, frame: expandedViewFrame)
         self.isExpanded = isExpanded
     }
 
