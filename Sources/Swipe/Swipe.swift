@@ -9,17 +9,30 @@ public struct SwipeConfig {
     public enum LayoutEffect {
         /// The visible action area is equally divide between all action views.
         case border
-        
+
         /// The visible action area is dragged, pinned to the any view, with each action view fully sized as it is exposed.
         case drag
-        
+
         /// The visible action area sits behind the any view, pinned to the edge of the any scroll view, and is revealed as the any view is dragged aside.
         case `static`
     }
-    
+
     public enum CornerRadius {
         case custom(CGFloat)
         case round
+        var cornerRadius: CGFloat {
+            switch self {
+            case let .custom(cGFloat):
+                return cGFloat
+            case .round:
+                return .infinity
+            }
+        }
+    }
+
+    public enum CornerRadiusType {
+        case overall
+        case unit
     }
 
     /// A Boolean value that indicates whether a full swipe automatically performs the first action. The default is true.
@@ -30,7 +43,7 @@ public struct SwipeConfig {
     public var feedbackEnable: Bool
 
     public var rubberBandEnable: Bool
-    
+
     /// By using an exponent between 0 and 1, the view’s offset is moved less the further it is away from its resting position. Use a larger exponent for less movement and a smaller exponent for more movement.
     public var rubberBandFactor: CGFloat
 
@@ -45,6 +58,7 @@ public struct SwipeConfig {
 
     public var whenSwipeCloseOtherSwipeAction: Bool
 
+    public var cornerRadiusType: CornerRadiusType
     public var cornerRadius: CornerRadius
     public var clipsToBounds: Bool
 
@@ -58,7 +72,8 @@ public struct SwipeConfig {
         itemSpacing: CGFloat = 0,
         gap: CGFloat = 0,
         cornerRadius: CornerRadius = .custom(0),
-        clipsToBounds: Bool = true,
+        cornerRadiusType: CornerRadiusType = .overall,
+        clipsToBounds: Bool = false,
         defaultTransitionCurve: SwipeTransitionCurve = .easeInOut,
         defaultTransitionDuration: TimeInterval = 0.3,
         whenSwipeCloseOtherSwipeAction: Bool = true
@@ -72,6 +87,7 @@ public struct SwipeConfig {
         self.gap = gap
         self.itemSpacing = itemSpacing
         self.cornerRadius = cornerRadius
+        self.cornerRadiusType = cornerRadiusType
         self.clipsToBounds = clipsToBounds
         self.defaultTransitionCurve = defaultTransitionCurve
         self.defaultTransitionDuration = defaultTransitionDuration
@@ -86,7 +102,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
     }
 
     public var config: SwipeConfig = .default {
-        didSet { updateConfig() }
+        didSet { clipsToBounds = config.clipsToBounds }
     }
 
     public let contentView: UIView
@@ -103,11 +119,11 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
 
     private var initialRevealOffset: CGFloat = 0.0
 
-    private var leftActions: [ActionWrapper] = []
+    private var leftActions: [SwipeActionWrapper] = []
 
-    private var rightActions: [ActionWrapper] = []
+    private var rightActions: [SwipeActionWrapper] = []
 
-    private var _actionsWrapper: [ActionWrapper] = []
+    private var _actionsWrapper: [SwipeActionWrapper] = []
 
     private var leftSwipeActionsContainerView: SwipeContentWrapperView? = nil
 
@@ -121,7 +137,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
         panRecognizer.delegate = self
         panRecognizer.allowAnyDirection = true
         gestureRecognizers = [panRecognizer]
-        updateConfig()
+        clipsToBounds = config.clipsToBounds
     }
 
     required init?(coder _: NSCoder) {
@@ -144,12 +160,8 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
         observation = nil
         observation = scrollView.observe(\.contentOffset) { [weak self] _, _ in
             guard let self else { return }
-            closeSwipeAction(transition: .animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve))
+            closeSwipeAction(transition: .defaultAnimation(config))
         }
-    }
-
-    func updateConfig() {
-        clipsToBounds = config.clipsToBounds
     }
 
     var _animator: UIViewPropertyAnimator?
@@ -163,7 +175,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
     }
 
     func configActions(with actions: [any SwipeAction]) {
-        let actionsWrapper = actions.map { ActionWrapper(action: $0) }
+        let actionsWrapper = actions.map { SwipeActionWrapper(action: $0) }
         let leftActions = actionsWrapper.filter { $0.action.horizontalEdge == .left }
         let rightActions = actionsWrapper.filter { $0.action.horizontalEdge == .right }
         guard !self.actions.elementsEqual(actions, by: { $0.isSame($1) }) else {
@@ -248,8 +260,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                         xVelocity: xVelocity,
                         transition: .animated(duration: 0, curve: defaultTransitionCurve(xVelocity: xVelocity, from: revealOffset, to: containerViewSize.width)),
                         anchorActionWrapper: nil
-                    ) { [unowned self] in
-                        guard reveal, leftSwipeActionsContainerView.isDisplayingExtendedAction, revealOffset == targetOffset else { return }
+                    ) {
                         leftSwipeActionsContainerView.resetExpandedState()
                     }
                 }
@@ -281,8 +292,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                         xVelocity: xVelocity,
                         transition: .animated(duration: 0, curve: defaultTransitionCurve(xVelocity: xVelocity, from: revealOffset, to: -containerViewSize.width)),
                         anchorActionWrapper: nil
-                    ) { [unowned self] in
-                        guard reveal, rightSwipeActionsContainerView.isDisplayingExtendedAction, revealOffset == targetOffset else { return }
+                    ) {
                         rightSwipeActionsContainerView.resetExpandedState()
                     }
                 }
@@ -293,7 +303,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
         }
     }
 
-    func updateRevealOffsetInternal(offset: CGFloat, xVelocity: CGFloat, transition: SwipeTransition, forceSwipeOffset: Bool = false, anchorActionWrapper: ActionWrapper?, completion: (() -> Void)? = nil) {
+    func updateRevealOffsetInternal(offset: CGFloat, xVelocity _: CGFloat, transition: SwipeTransition, forceSwipeOffset: Bool = false, anchorActionWrapper: SwipeActionWrapper?, completion: (() -> Void)? = nil) {
         revealOffset = offset
         var leftRevealCompleted = true
         var rightRevealCompleted = true
@@ -334,9 +344,8 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                 completion()
             }
             leftSwipeActionsContainerView.updateOffset(
-                with: contentView.frame.minX - config.gap,
+                contentView.frame.minX - config.gap,
                 sideInset: safeAreaInsets.left,
-                xVelocity: xVelocity,
                 forceSwipeOffset: forceSwipeOffset,
                 anchorActionWrapper: anchorActionWrapper,
                 transition: transition
@@ -376,9 +385,8 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
                 completion()
             }
             rightSwipeActionsContainerView.updateOffset(
-                with: abs(contentView.frame.minX) - config.gap,
+                abs(contentView.frame.minX) - config.gap,
                 sideInset: safeAreaInsets.right,
-                xVelocity: xVelocity,
                 forceSwipeOffset: forceSwipeOffset,
                 anchorActionWrapper: anchorActionWrapper,
                 transition: transition
@@ -388,7 +396,7 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
 
     func setupLeftActionsContainerView() {
         if !leftActions.isEmpty {
-            let actionsContainerView = SwipeContentWrapperView(actions: leftActions, config: config, horizontalEdge: .left, fixedHeight: bounds.height) { [weak self] action, event in
+            let actionsContainerView = SwipeContentWrapperView(horizontalEdgeActions: leftActions, horizontalEdge: .left, config: config) { [weak self] action, event in
                 guard let self else { return }
                 handlerActionEvent(action: action, eventFrom: event)
             }
@@ -396,21 +404,20 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
             let size = CGSize(width: actionsContainerView.preferredWidth, height: bounds.height)
             actionsContainerView.frame = CGRect(origin: CGPoint(x: min(revealOffset - size.width, 0.0), y: 0.0), size: size)
             actionsContainerView.updateOffset(
-                with: 0,
+                0,
                 sideInset: safeAreaInsets.left,
-                xVelocity: 0,
                 forceSwipeOffset: false,
                 anchorActionWrapper: nil,
                 transition: .immediate
             )
-            actionsContainerView.actions.forEach { $0.action.willShow() }
+            actionsContainerView.horizontalEdgeWrapperActions.forEach { $0.action.willShow() }
             insertSubview(actionsContainerView, belowSubview: contentView)
         }
     }
 
     func setupRightActionsContainerView() {
         if !rightActions.isEmpty {
-            let actionsContainerView = SwipeContentWrapperView(actions: rightActions, config: config, horizontalEdge: .right, fixedHeight: bounds.height) { [weak self] action, event in
+            let actionsContainerView = SwipeContentWrapperView(horizontalEdgeActions: rightActions, horizontalEdge: .right, config: config) { [weak self] action, event in
                 guard let self else { return }
                 handlerActionEvent(action: action, eventFrom: event)
             }
@@ -418,14 +425,13 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
             let size = CGSize(width: actionsContainerView.preferredWidth, height: bounds.height)
             actionsContainerView.frame = CGRect(origin: CGPoint(x: bounds.width + max(revealOffset, -size.width), y: 0.0), size: size)
             actionsContainerView.updateOffset(
-                with: 0,
+                0,
                 sideInset: safeAreaInsets.right,
-                xVelocity: 0,
                 forceSwipeOffset: false,
                 anchorActionWrapper: nil,
                 transition: .immediate
             )
-            actionsContainerView.actions.forEach { $0.action.willShow() }
+            actionsContainerView.horizontalEdgeWrapperActions.forEach { $0.action.willShow() }
             insertSubview(actionsContainerView, belowSubview: contentView)
         }
     }
@@ -448,7 +454,6 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
             closeSwipeAction(transition: defaultTransition)
         case let .expanded(completion):
             let xVelocity = panRecognizer.lastVelocity.x
-            swipeContentWrapperView.clickedAction = action
             let offset = frame.width + config.gap
             updateRevealOffsetInternal(
                 offset: swipeContentWrapperView.horizontalEdge.isLeft ? offset : -offset,

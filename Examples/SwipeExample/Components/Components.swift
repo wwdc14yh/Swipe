@@ -11,29 +11,20 @@ import UIComponent
 import UIComponentSwipe
 
 extension SwipeActionComponent {
-    static func rounded(horizontalEdge: SwipeHorizontalEdge, body: SwipeActionContent, backgroundColor: UIColor = .systemGroupedBackground, cornerRadius: CGFloat = 15) -> Self {
-        self.init(
-            identifier: UUID().uuidString,
-            horizontalEdge: horizontalEdge
-        ) {
-            body
-        } backgroundBuild: {
-            ViewComponent()
-                .backgroundColor(backgroundColor)
-                .update {
-                    $0.layer.cornerRadius = min(min($0.frame.height, $0.frame.width) / 2, cornerRadius)
-                }
-                .with(\.layer.cornerCurve, .continuous)
-        } alertBuild: {
-            Space()
-        } configHighlightView: { highlightView, isHighlighted in
-            UIView.performWithoutAnimation {
-                highlightView.layer.cornerRadius = min(min(highlightView.frame.height, highlightView.frame.width) / 2, cornerRadius)
-            }
-            highlightView.backgroundColor = .black.withAlphaComponent(isHighlighted ? 0.3 : 0)
-        } actionHandler: { completion, _, _ in
+    init(
+        horizontalEdge: SwipeHorizontalEdge,
+        body: SwipeActionContent,
+        expanded: SwipeActionContent? = nil,
+        backgroundColor: UIColor = .systemGroupedBackground
+    ) {
+        self.init(identifier: UUID().uuidString,
+                  horizontalEdge: horizontalEdge,
+                  backgroundColor: backgroundColor,
+                  body: body,
+                  expanded: expanded,
+                  actionHandler: { completion, _, _ in
             completion(.expanded())
-        }
+        })
     }
 }
 
@@ -68,7 +59,7 @@ struct Group: ComponentBuilder {
     let backgroundColor: UIColor
     let cornerRadius: CGFloat
     let body: [any Component]
-    
+
     init(title: any Component, footnode: any Component, backgroundColor: UIColor, cornerRadius: CGFloat, body: [any Component]) {
         self.title = title
         self.footnode = footnode
@@ -76,12 +67,14 @@ struct Group: ComponentBuilder {
         self.cornerRadius = cornerRadius
         self.body = body
     }
-    
-    init(title: String, 
-         footnote: String? = nil,
-         backgroundColor: UIColor = .secondarySystemGroupedBackground,
-         cornerRadius: CGFloat = 15,
-         @ComponentArrayBuilder _ body: () -> [any Component]) {
+
+    init(
+        title: String,
+        footnote: String? = nil,
+        backgroundColor: UIColor = .secondarySystemGroupedBackground,
+        cornerRadius: CGFloat = 15,
+        @ComponentArrayBuilder _ body: () -> [any Component]
+    ) {
         var footnode: (any Component)? {
             guard let footnote else { return nil }
             return Text(footnote, font: UIFont.preferredFont(forTextStyle: .footnote))
@@ -210,6 +203,6 @@ struct SwipeActionContent: ComponentBuilder {
                 HStack(spacing: 2, alignItems: .center) { combineComponent }
             }
         }
-        .inset(h: 20)
+        .inset(h: 25)
     }
 }

@@ -39,6 +39,7 @@ public protocol SwipeAction {
     func willShow()
 
     func makeCotnentView() -> ContentView
+    func makeBackgroundView() -> UIView
     func makeExpandedView() -> UIView?
     func makeAlertView() -> UIView
 }

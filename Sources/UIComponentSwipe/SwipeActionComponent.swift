@@ -5,7 +5,6 @@ import Swipe
 import UIComponent
 
 public struct SwipeActionComponent: SwipeAction {
-    public static let blankActionHandler: ActionHandler = { _, _, _ in }
     public static let defaultConfigHighlightView: ConfigHighlightView = { highlightView, isHighlighted in
         highlightView.backgroundColor = .black.withAlphaComponent(isHighlighted ? 0.3 : 0)
     }
@@ -19,10 +18,14 @@ public struct SwipeActionComponent: SwipeAction {
     public var alert: (any Component)?
     public var background: (any Component)?
     public var body: (any Component)?
+    public var expanded: (any Component)?
 
     public let actionHandler: SwipeActionComponent.ActionHandler
-    public let isEnableFadeTransitionAddedExpandedView = false
     public let configHighlightView: ConfigHighlightView
+    
+    public var isEnableFadeTransitionAddedExpandedView: Bool {
+        expanded != nil
+    }
 
     public init(
         horizontalEdge: SwipeHorizontalEdge,
@@ -44,36 +47,9 @@ public struct SwipeActionComponent: SwipeAction {
         identifier: String,
         horizontalEdge: SwipeHorizontalEdge,
         backgroundColor: UIColor,
-        body: (any Component)?,
-        alert: (any Component)? = nil,
-        configHighlightView: @escaping ConfigHighlightView = defaultConfigHighlightView,
-        actionHandler: @escaping SwipeActionComponent.ActionHandler
-    ) {
-        var bodyProvider: ComponentProvider? {
-            guard let body else { return nil }
-            return { body }
-        }
-        var alertProvider: ComponentProvider? {
-            guard let alert else { return nil }
-            return { alert }
-        }
-        self.init(
-            identifier: identifier,
-            horizontalEdge: horizontalEdge,
-            backgroundColor: backgroundColor,
-            bodyBuild: bodyProvider,
-            alertBuild: alertProvider,
-            configHighlightView: configHighlightView,
-            actionHandler: actionHandler
-        )
-    }
-
-    public init(
-        identifier: String,
-        horizontalEdge: SwipeHorizontalEdge,
-        backgroundColor: UIColor,
         bodyBuild: SwipeActionComponent.ComponentProvider? = nil,
         alertBuild: SwipeActionComponent.ComponentProvider? = nil,
+        expandedBuild: SwipeActionComponent.ComponentProvider? = nil,
         configHighlightView: @escaping ConfigHighlightView = defaultConfigHighlightView,
         actionHandler: @escaping SwipeActionComponent.ActionHandler
     ) {
@@ -83,6 +59,7 @@ public struct SwipeActionComponent: SwipeAction {
             bodyBuild: bodyBuild,
             backgroundBuild: { Space().backgroundColor(backgroundColor) },
             alertBuild: alertBuild,
+            expandedBuild: expandedBuild,
             configHighlightView: configHighlightView,
             actionHandler: actionHandler
         )
@@ -94,6 +71,7 @@ public struct SwipeActionComponent: SwipeAction {
         bodyBuild: SwipeActionComponent.ComponentProvider? = nil,
         backgroundBuild: SwipeActionComponent.ComponentProvider? = nil,
         alertBuild: SwipeActionComponent.ComponentProvider? = nil,
+        expandedBuild: SwipeActionComponent.ComponentProvider? = nil,
         configHighlightView: @escaping ConfigHighlightView = defaultConfigHighlightView,
         actionHandler: @escaping SwipeActionComponent.ActionHandler
     ) {
@@ -103,6 +81,41 @@ public struct SwipeActionComponent: SwipeAction {
             body: bodyBuild?(),
             background: backgroundBuild?(),
             alert: alertBuild?(),
+            expanded: expandedBuild?(),
+            configHighlightView: configHighlightView,
+            actionHandler: actionHandler
+        )
+    }
+    
+    public init(
+        identifier: String,
+        horizontalEdge: SwipeHorizontalEdge,
+        backgroundColor: UIColor,
+        body: (any Component)?,
+        alert: (any Component)? = nil,
+        expanded: (any Component)? = nil,
+        configHighlightView: @escaping ConfigHighlightView = defaultConfigHighlightView,
+        actionHandler: @escaping SwipeActionComponent.ActionHandler
+    ) {
+        var bodyProvider: ComponentProvider? {
+            guard let body else { return nil }
+            return { body }
+        }
+        var alertProvider: ComponentProvider? {
+            guard let alert else { return nil }
+            return { alert }
+        }
+        var expandedProvider: ComponentProvider? {
+            guard let expanded else { return nil }
+            return { expanded }
+        }
+        self.init(
+            identifier: identifier,
+            horizontalEdge: horizontalEdge,
+            backgroundColor: backgroundColor,
+            bodyBuild: bodyProvider,
+            alertBuild: alertProvider,
+            expandedBuild: expandedProvider,
             configHighlightView: configHighlightView,
             actionHandler: actionHandler
         )
@@ -111,10 +124,11 @@ public struct SwipeActionComponent: SwipeAction {
     public init(
         identifier: String,
         horizontalEdge: SwipeHorizontalEdge,
-        body: (any Component)?,
-        background: (any Component)?,
-        alert: (any Component)?,
-        configHighlightView: @escaping ConfigHighlightView,
+        body: (any Component)? = nil,
+        background: (any Component)? = nil,
+        alert: (any Component)? = nil,
+        expanded: (any Component)? = nil,
+        configHighlightView: @escaping ConfigHighlightView = SwipeActionComponent.defaultConfigHighlightView,
         actionHandler: @escaping SwipeActionComponent.ActionHandler
     ) {
         self.identifier = identifier
@@ -122,8 +136,16 @@ public struct SwipeActionComponent: SwipeAction {
         self.alert = alert
         self.background = background
         self.body = body
+        self.expanded = expanded
         self.configHighlightView = configHighlightView
         self.actionHandler = actionHandler
+    }
+    
+    public func makeBackgroundView() -> UIView {
+        let componentView = ComponentView()
+        componentView.component = ZStack(verticalAlignment: .stretch, horizontalAlignment: .stretch) { background ?? Space() }
+            .fill()
+        return componentView
     }
 
     public func makeCotnentView() -> UIView {
@@ -133,8 +155,11 @@ public struct SwipeActionComponent: SwipeAction {
     }
 
     public func makeExpandedView() -> UIView? {
+        guard let expanded else {
+            return nil
+        }
         let componentView = ComponentView()
-        componentView.component = wrapLayout(body: body, justifyContent: horizontalEdge == .left ? .end : .start)
+        componentView.component = wrapLayout(body: expanded, justifyContent: horizontalEdge == .left ? .end : .start)
         return componentView
     }
 
@@ -154,19 +179,17 @@ public struct SwipeActionComponent: SwipeAction {
     }
 
     func wrapLayout(body: (any Component)?, justifyContent: MainAxisAlignment, alignItems: CrossAxisAlignment = .center) -> WrapLayout {
-        WrapLayout(justifyContent: justifyContent, alignItems: alignItems, background: background ?? Space()) { body }
+        WrapLayout(justifyContent: justifyContent, alignItems: alignItems) { body }
     }
 
     struct WrapLayout: ComponentBuilder {
         let justifyContent: MainAxisAlignment
         let alignItems: CrossAxisAlignment
         let components: [any Component]
-        let background: any Component
-        init(justifyContent: MainAxisAlignment, alignItems: CrossAxisAlignment, background: any Component, @ComponentArrayBuilder _ components: () -> [any Component]) {
+        init(justifyContent: MainAxisAlignment, alignItems: CrossAxisAlignment, @ComponentArrayBuilder _ components: () -> [any Component]) {
             self.justifyContent = justifyContent
             self.alignItems = alignItems
             self.components = components()
-            self.background = background
         }
 
         func build() -> some Component {
@@ -174,9 +197,6 @@ public struct SwipeActionComponent: SwipeAction {
                 components
             }
             .fill()
-            .background {
-                background
-            }
         }
     }
 }

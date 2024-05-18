@@ -31,7 +31,7 @@ class ViewController: UIViewController {
     var layoutEffect: any Component {
         func configSwipe(_ component: any Component, layoutEffect: SwipeConfig.LayoutEffect) -> any Component {
             component
-                .swipeActions(leftExampleSwipeActions(0) + rightExampleSwipeActions(0))
+                .swipeActions(leftExampleSwipeActions() + rightExampleSwipeActions())
                 .swipeConfig(SwipeConfig(
                     layoutEffect: layoutEffect,
                     clipsToBounds: false
@@ -71,8 +71,8 @@ class ViewController: UIViewController {
                     .with(\.layer.cornerRadius, 15)
                     .with(\.layer.cornerCurve, .continuous)
                     .swipeActions {
-                        leftExampleSwipeActions(0)
-                        rightExampleSwipeActions(0)
+                        leftExampleSwipeActions()
+                        rightExampleSwipeActions()
                     }
                     .swipeConfig(SwipeConfig(
                         layoutEffect: .static,
@@ -98,7 +98,7 @@ class ViewController: UIViewController {
                         rightExampleSwipeActions()
                     }
                     .swipeConfig(SwipeConfig(
-                        layoutEffect: .border,
+                        layoutEffect: .static,
                         itemSpacing: 5,
                         gap: 5,
                         cornerRadius: .custom(15),
@@ -110,17 +110,18 @@ class ViewController: UIViewController {
                     .id("Rounded corners 2")
                 Cell(title: "Rounded corners 3")
                     .backgroundColor(.systemGroupedBackground)
-                    .with(\.layer.cornerRadius, 15)
+                    .roundedCorner()
                     .with(\.layer.cornerCurve, .continuous)
                     .swipeActions {
-                        leftExampleSwipeActions(99)
-                        rightExampleSwipeActions(999)
+                        leftExampleSwipeActions()
+                        rightExampleSwipeActions()
                     }
                     .swipeConfig(SwipeConfig(
                         layoutEffect: .drag,
                         itemSpacing: 5,
                         gap: 5,
-                        cornerRadius: .custom(15),
+                        cornerRadius: .round,
+                        cornerRadiusType: .unit,
                         clipsToBounds: false
                     ))
                     .inset(h: 10)
@@ -138,7 +139,9 @@ class ViewController: UIViewController {
                 for (offset, value) in emailData.enumerated() {
                     EmailComponent(data: value)
                         .swipeActions {
-                            remindSwipeAction(with: value)
+                            
+                            // MARK: Left
+                            
                             SwipeActionComponent(identifier: "read", horizontalEdge: .left, backgroundColor: UIColor(red: 0.008, green: 0.475, blue: 0.996, alpha: 1.0)) {
                                 VStack(justifyContent: .center, alignItems: .center) {
                                     Image(systemName: value.unread ? "envelope.open.fill" : "envelope.fill")
@@ -151,6 +154,7 @@ class ViewController: UIViewController {
                             } actionHandler: { [unowned self] completion, action, form in
                                 handlerEmail(action, offset: offset, completion: completion, eventForm: form)
                             }
+                            remindSwipeAction(with: value)
 
                             // MARK: Right
 
@@ -230,40 +234,41 @@ class ViewController: UIViewController {
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        print(view.safeAreaInsets)
         reloadComponent()
     }
 
-    func leftExampleSwipeActions(_ cornerRadius: CGFloat = 15) -> [any SwipeAction] {
+    func leftExampleSwipeActions() -> [any SwipeAction] {
         [
-            SwipeActionComponent.rounded(
+            SwipeActionComponent(
                 horizontalEdge: .left,
                 body: SwipeActionContent(image: UIImage(systemName: "square.and.arrow.up.fill"), text: "", alignment: .ltr, tintColor: .white),
-                backgroundColor: UIColor(red: 255 / 255.0, green: 149 / 255.0, blue: 0 / 255.0, alpha: 1.0),
-                cornerRadius: cornerRadius
+                backgroundColor: UIColor(red: 255 / 255.0, green: 149 / 255.0, blue: 0 / 255.0, alpha: 1.0)
             ),
-            SwipeActionComponent.rounded(
+            SwipeActionComponent(
+                horizontalEdge: .left,
+                body: SwipeActionContent(image: UIImage(systemName: "paperplane.fill"), text: "", alignment: .ltr, tintColor: .white),
+                backgroundColor: .systemGreen
+            ),
+            SwipeActionComponent(
                 horizontalEdge: .left,
                 body: SwipeActionContent(image: UIImage(systemName: "video.fill"), text: "", alignment: .ltr, tintColor: .white),
-                backgroundColor: UIColor(red: 0 / 255.0, green: 122 / 255.0, blue: 255 / 255.0, alpha: 1.0),
-                cornerRadius: cornerRadius
+                backgroundColor: UIColor(red: 0 / 255.0, green: 122 / 255.0, blue: 255 / 255.0, alpha: 1.0)
             ),
         ]
     }
 
-    func rightExampleSwipeActions(_ cornerRadius: CGFloat = 15) -> [any SwipeAction] {
+    func rightExampleSwipeActions() -> [any SwipeAction] {
         [
-            SwipeActionComponent.rounded(
+            SwipeActionComponent(
                 horizontalEdge: .right,
                 body: SwipeActionContent(image: UIImage(systemName: "bookmark.fill"), text: "Save", alignment: .ltr, tintColor: UIColor(red: 0, green: 0.353, blue: 0.851, alpha: 1.0)),
-                backgroundColor: UIColor(red: 242 / 255.0, green: 242 / 255.0, blue: 242 / 255.0, alpha: 1.0),
-                cornerRadius: cornerRadius
+                backgroundColor: UIColor(red: 242 / 255.0, green: 242 / 255.0, blue: 242 / 255.0, alpha: 1.0)
             ),
-            SwipeActionComponent.rounded(
+            SwipeActionComponent(
                 horizontalEdge: .right,
                 body: SwipeActionContent(image: nil, text: "Delete", alignment: .ltr, tintColor: .white),
-                backgroundColor: UIColor(red: 0.80, green: 0, blue: 0.137, alpha: 1.0),
-                cornerRadius: cornerRadius
+                expanded: SwipeActionContent(image: UIImage(systemName: "trash.fill"), text: "", alignment: .ltr, tintColor: .white),
+                backgroundColor: UIColor(red: 0.80, green: 0, blue: 0.137, alpha: 1.0)
             ),
         ]
     }

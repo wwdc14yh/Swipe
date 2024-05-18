@@ -3,6 +3,10 @@
 import UIKit
 
 public enum SwipeTransition {
+    static func defaultAnimation(_ config: SwipeConfig) -> SwipeTransition {
+        .animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve)
+    }
+    
     case immediate
     case animated(duration: TimeInterval, curve: SwipeTransitionCurve)
 
