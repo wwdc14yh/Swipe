@@ -46,7 +46,7 @@ final class SwipeItemContentWrapperView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        backgroundView.frame = CGRect(origin: CGPoint(x: wrapperAction.action.horizontalEdge.isLeft ? -100 : 0, y: 0), size: CGSize(width: bounds.width + 100, height: bounds.height))
+        backgroundView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: bounds.width + 100, height: bounds.height))
         highlightView.frame = bounds
         let fitSize = sizeThatFits(bounds.size)
         contentView.frame = CGRect(origin: .zero, size: CGSize(width: fitSize.width, height: floor(bounds.height)))

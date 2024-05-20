@@ -92,7 +92,7 @@ final class SwipeContentWrapperView: UIView {
         (isLeft ? views.reversed() : views).forEach { addSubview($0) }
         views
             .enumerated()
-            .forEach { $1.clipsToBounds = isLeft ? ($0 != 0) : ($0 != (views.count - 1))  }
+            .forEach { $1.clipsToBounds = ($0 != (views.count - 1))  }
         clipsToBounds = true
         self.layer.cornerCurve = .continuous
     }
@@ -154,10 +154,10 @@ final class SwipeContentWrapperView: UIView {
         itemContentWrapperView.frame = frame
         insertSubview(itemContentWrapperView, aboveSubview: edgeView)
         itemContentWrapperView.layoutIfNeeded()
-        itemContentWrapperView.alpha = 0
+        itemContentWrapperView.contentView.alpha = 0
         if expandedActionWrapper.action.isEnableFadeTransitionAddedExpandedView {
-            SwipeTransition.animated(duration: 0.2, curve: .easeInOut).update {
-                itemContentWrapperView.alpha = 1
+            SwipeTransition.animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve).update {
+                itemContentWrapperView.contentView.alpha = 1
             }
         }
         return itemContentWrapperView

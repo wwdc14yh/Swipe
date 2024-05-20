@@ -91,7 +91,7 @@ class ViewController: UIViewController {
                         swipeView.openSwipeAction(with: .left, transition: .animated(duration: 0.5, curve: .easeInOut))
                     }
                     .backgroundColor(.systemGroupedBackground)
-                    .with(\.layer.cornerRadius, 15)
+                    .roundedCorner()
                     .with(\.layer.cornerCurve, .continuous)
                     .swipeActions {
                         leftExampleSwipeActions()
@@ -99,9 +99,10 @@ class ViewController: UIViewController {
                     }
                     .swipeConfig(SwipeConfig(
                         layoutEffect: .static,
-                        itemSpacing: 5,
+                        itemSpacing: 1,
                         gap: 5,
-                        cornerRadius: .custom(15),
+                        cornerRadius: .round,
+                        cornerRadiusType: .overall,
                         clipsToBounds: false
                     ))
                     .inset(h: 10)
