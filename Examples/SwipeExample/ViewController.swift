@@ -293,16 +293,26 @@ class ViewController: UIViewController {
         )
         primaryMenuSwipeAction.body = SwipeActionContent(image: UIImage(systemName: "ellipsis.circle.fill"), text: "More", alignment: .ttb, tintColor: .white)
             .primaryMenu {
-                let actionHandler: UIActionHandler = { action in
+                let actionHandler: UIActionHandler = { [unowned self] action in
+                    guard let swipeView = componentView.visibleView(id: item.id) as? SwipeView else { return }
+                    let afterHandler: SwipeActionAfterHandler
                     if action.title == "hold" {
-                        completionAfterHandler?(.hold)
+                        afterHandler = .hold
                     } else if action.title == "close" {
-                        completionAfterHandler?(.close)
+                        afterHandler = .close
                     } else if action.title == "expanded" {
-                        completionAfterHandler?(.expanded(completed: nil))
+                        afterHandler = .expanded(completed: nil)
                     } else if action.title == "alert" {
-                        completionAfterHandler?(.alert)
+                        afterHandler = .alert
+                    } else {
+                        afterHandler = .hold
                     }
+                    if let completionAfterHandler {
+                        completionAfterHandler(afterHandler)
+                    } else {
+                        swipeView.manualHandlerAfter(afterHandler: afterHandler, action: primaryMenuSwipeAction)
+                    }
+                    
                 }
                 return UIMenu(title: "Custom after handle (\(item.from))", children: [
                     UIAction(title: "hold", handler: actionHandler),
