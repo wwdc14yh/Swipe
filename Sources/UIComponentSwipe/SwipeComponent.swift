@@ -2,7 +2,7 @@
 
 import Swipe
 import Foundation
-import UIComponent
+@preconcurrency import UIComponent
 
 public struct SwipeComponent: Component {
     public let component: any Component
@@ -29,7 +29,7 @@ public struct SwipeComponent: Component {
     }
 }
 
-public struct SwipeRenderNode: RenderNode {
+public struct SwipeRenderNode: @preconcurrency RenderNode {
     /// The size of the render node.
     public let size: CGSize
 
@@ -55,12 +55,14 @@ public struct SwipeRenderNode: RenderNode {
         content.reuseStrategy
     }
 
+    @MainActor
     public func updateView(_ view: SwipeView) {
         view.config = config
         view.actions = actions
         (view.contentView as! ComponentView).engine.reloadWithExisting(component: component, renderNode: content)
     }
 
+    @MainActor
     public func makeView() -> SwipeView {
         let componentView = ComponentView()
         componentView.engine.reloadWithExisting(component: component, renderNode: content)

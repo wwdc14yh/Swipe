@@ -3,10 +3,6 @@
 import UIKit
 
 public enum SwipeTransition {
-    static func defaultAnimation(_ config: SwipeConfig) -> SwipeTransition {
-        .animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve)
-    }
-    
     case immediate
     case animated(duration: TimeInterval, curve: SwipeTransitionCurve)
 
@@ -17,18 +13,22 @@ public enum SwipeTransition {
             return true
         }
     }
-    
+
     var duration: TimeInterval {
         switch self {
         case .immediate:
             return 0.0
-        case .animated(let duration, _):
+        case let .animated(duration, _):
             return duration
         }
     }
+
+    static func defaultAnimation(_ config: SwipeConfig) -> SwipeTransition {
+        .animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve)
+    }
 }
 
-public enum SwipeTransitionCurve: Equatable {
+public enum SwipeTransitionCurve: Equatable, Sendable {
     case linear
     case easeIn
     case easeOut
@@ -36,7 +36,17 @@ public enum SwipeTransitionCurve: Equatable {
     case spring(damping: CGFloat, initialVelocity: CGVector)
     case custom(UIViewPropertyAnimator)
 
-    internal func animator(duration: TimeInterval) -> UIViewPropertyAnimator {
+    static func initialAnimationVelocity(for gestureXvelocity: CGFloat, from currentValue: CGFloat, to targetValue: CGFloat) -> CGFloat {
+        var animationXvelocity: CGFloat = 0
+        let xDistance = targetValue - currentValue
+        if xDistance != 0 {
+            animationXvelocity = gestureXvelocity / xDistance
+        }
+        return min(10, max(-10, animationXvelocity))
+    }
+
+    @MainActor
+    func animator(duration: TimeInterval) -> UIViewPropertyAnimator {
         switch self {
         case .linear:
             return UIViewPropertyAnimator(duration: duration, curve: .linear)
@@ -52,19 +62,10 @@ public enum SwipeTransitionCurve: Equatable {
             return animator
         }
     }
-    
-    internal static func initialAnimationVelocity(for gestureXvelocity: CGFloat, from currentValue: CGFloat, to targetValue: CGFloat) -> CGFloat {
-        var animationXvelocity: CGFloat = 0
-        let xDistance = targetValue - currentValue
-        if xDistance != 0 {
-            animationXvelocity = gestureXvelocity / xDistance
-        }
-        return min(10, max(-10, animationXvelocity))
-    }
-
 }
 
 extension SwipeTransition {
+    @MainActor
     @discardableResult
     func update(animation: @escaping () -> Void, completion: ((Bool) -> Void)? = nil) -> UIViewPropertyAnimator? {
         switch self {
@@ -87,11 +88,13 @@ extension SwipeTransition {
         return nil
     }
 
+    @MainActor
     @discardableResult
     func updateOriginX(with view: UIView, originX: CGFloat, completion _: ((Bool) -> Void)? = nil) -> UIViewPropertyAnimator? {
         update { view.frame.origin.x = originX }
     }
 
+    @MainActor
     @discardableResult
     func updateFrame(with view: UIView, frame: CGRect, completion: ((Bool) -> Void)? = nil) -> UIViewPropertyAnimator? {
         if view.frame.equalTo(frame) {
@@ -105,8 +108,7 @@ extension SwipeTransition {
     }
 }
 
-internal extension UISpringTimingParameters {
-    
+extension UISpringTimingParameters {
     /// A design-friendly way to create a spring timing curve.
     ///
     /// - Parameters:
@@ -118,5 +120,4 @@ internal extension UISpringTimingParameters {
         let damp = 4 * .pi * damping / response
         self.init(mass: 1, stiffness: stiffness, damping: damp, initialVelocity: initialVelocity)
     }
-    
 }

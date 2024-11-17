@@ -4,32 +4,33 @@ import UIKit
 
 public typealias SwipeActionHandler = (_ action: any SwipeAction) -> Void
 
-public enum SwipeHorizontalEdge {
+public enum SwipeHorizontalEdge: Sendable {
     case left, right
     public var isLeft: Bool { self == .left }
 }
 
-public enum SwipeActionEventFrom {
+public enum SwipeActionEventFrom: Sendable {
     case tap
     case expanded
     case alert
 }
 
-public enum SwipeActionAfterHandler {
-    public typealias TransitionCompleted = () -> Void
+public enum SwipeActionAfterHandler: Sendable {
+    public typealias TransitionCompleted = @Sendable () -> Void
     case hold
     case close
     case expanded(completed: TransitionCompleted? = nil)
     case alert
 }
 
-public protocol SwipeAction {
-    typealias CompletionAfterHandler = (SwipeActionAfterHandler) -> Void
+@MainActor
+public protocol SwipeAction: Sendable {
+    typealias CompletionAfterHandler = @Sendable (SwipeActionAfterHandler) -> Void
     associatedtype ContentView: UIView
     var identifier: String { get }
     var horizontalEdge: SwipeHorizontalEdge { get }
     var isEnableFadeTransitionAddedExpandedView: Bool { get }
-
+    
     func configHighlightView(with highlightView: UIView, isHighlighted: Bool)
     
     func update(contentView: ContentView)
@@ -39,8 +40,11 @@ public protocol SwipeAction {
     func willShow()
 
     func makeCotnentView() -> ContentView
+    
     func makeBackgroundView() -> UIView
+    
     func makeExpandedView() -> UIView?
+    
     func makeAlertView() -> UIView
 }
 

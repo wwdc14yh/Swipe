@@ -2,15 +2,17 @@
 
 import UIKit
 import Swipe
-import UIComponent
+@preconcurrency import UIComponent
 
 public struct SwipeActionComponent: SwipeAction {
     public static let defaultConfigHighlightView: ConfigHighlightView = { highlightView, isHighlighted in
-        highlightView.backgroundColor = .black.withAlphaComponent(isHighlighted ? 0.3 : 0)
+        Task { @MainActor in
+            highlightView.backgroundColor = .black.withAlphaComponent(isHighlighted ? 0.3 : 0)
+        }
     }
 
-    public typealias ConfigHighlightView = (_ highlightView: UIView, _ isHighlighted: Bool) -> Void
-    public typealias ActionHandler = (_ completion: @escaping CompletionAfterHandler, _ action: any SwipeAction, _ form: SwipeActionEventFrom) -> Void
+    public typealias ConfigHighlightView = @MainActor @Sendable (_ highlightView: UIView, _ isHighlighted: Bool) -> Void
+    public typealias ActionHandler = @Sendable (_ completion: @escaping @Sendable CompletionAfterHandler, _ action: any SwipeAction, _ form: SwipeActionEventFrom) -> Void
     public typealias ComponentProvider = () -> any Component
 
     public let identifier: String
@@ -57,7 +59,11 @@ public struct SwipeActionComponent: SwipeAction {
             identifier: identifier,
             horizontalEdge: horizontalEdge,
             bodyBuild: bodyBuild,
-            backgroundBuild: { Space().backgroundColor(backgroundColor) },
+            backgroundBuild: {
+                MainActor.assumeIsolated {
+                    Space().backgroundColor(backgroundColor)
+                }
+            },
             alertBuild: alertBuild,
             expandedBuild: expandedBuild,
             configHighlightView: configHighlightView,

@@ -7,7 +7,8 @@
 
 import UIKit
 
-final class SwipeActionWrapper {
+@MainActor
+final class SwipeActionWrapper: @unchecked Sendable {
     let action: any SwipeAction
     
     private(set) var rendered: Bool = false

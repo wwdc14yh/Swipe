@@ -2,11 +2,17 @@
 
 import UIKit
 
-public struct SwipeConfig {
-    public static var `default` = SwipeConfig()
+public struct SwipeConfig: Sendable {
+    public static var `default`: SwipeConfig {
+        get { _lock.withLock { _defaultConfig } }
+        set { _lock.withLock { _defaultConfig = newValue } }
+    }
+    
+    private static let _lock = NSLock()
+    nonisolated(unsafe) private static var _defaultConfig = SwipeConfig()
 
     /// Describes the transition style. Transition is the style of how the action buttons are exposed during the swipe.
-    public enum LayoutEffect {
+    public enum LayoutEffect: Sendable {
         /// The visible action area is equally divide between all action views.
         case border
 
@@ -17,7 +23,7 @@ public struct SwipeConfig {
         case `static`
     }
 
-    public enum CornerRadius {
+    public enum CornerRadius: Sendable {
         case custom(CGFloat)
         case round
         var cornerRadius: CGFloat {
@@ -30,7 +36,7 @@ public struct SwipeConfig {
         }
     }
 
-    public enum CornerRadiusType {
+    public enum CornerRadiusType: Sendable {
         case overall
         case unit
     }
@@ -160,7 +166,9 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
         observation = nil
         observation = scrollView.observe(\.contentOffset) { [weak self] _, _ in
             guard let self else { return }
-            closeSwipeAction(transition: .defaultAnimation(config))
+            Task { @MainActor in
+                closeSwipeAction(transition: .defaultAnimation(config))
+            }
         }
     }
 
@@ -439,10 +447,13 @@ public class SwipeView: UIView, UIGestureRecognizerDelegate {
     func handlerActionEvent(action: any SwipeAction, eventFrom: SwipeActionEventFrom) {
         action.handlerAction(completion: { [weak self] afterHandler in
             guard let self else { return }
-            self.afterHandler(with: afterHandler, action: action)
+            Task { @MainActor in
+                self.afterHandler(with: afterHandler, action: action)
+            }
         }, eventFrom: eventFrom)
     }
 
+    
     func afterHandler(with afterHandler: SwipeActionAfterHandler, action: (any SwipeAction)?) {
         let defaultTransition = SwipeTransition.animated(duration: config.defaultTransitionDuration, curve: config.defaultTransitionCurve)
         guard let action, let actionWrapper = _actionsWrapper.first(where: { $0.action.isSame(action) }), let swipeContentWrapperView = actionWrapper.swipeContentWrapperView else {

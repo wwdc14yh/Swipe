@@ -153,7 +153,9 @@ class ViewController: UIViewController {
                                 .inset(h: 10)
                                 .minSize(width: 74, height: 0)
                             } actionHandler: { [unowned self] completion, action, form in
-                                handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                Task { @MainActor in
+                                    handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                }
                             }
                             remindSwipeAction(with: value)
 
@@ -170,7 +172,9 @@ class ViewController: UIViewController {
                                 .inset(h: 10)
                                 .minSize(width: 74, height: 0)
                             } actionHandler: { [unowned self] completion, action, form in
-                                handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                Task { @MainActor in
+                                    handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                }
                             }
                             if value.unread {
                                 SwipeActionComponent(identifier: "archive", horizontalEdge: .right, backgroundColor: UIColor(red: 0.749, green: 0.349, blue: 0.945, alpha: 1.0)) {
@@ -183,7 +187,9 @@ class ViewController: UIViewController {
                                     .inset(h: 10)
                                     .minSize(width: 74, height: 0)
                                 } actionHandler: { [unowned self] completion, action, form in
-                                    handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                    Task { @MainActor in
+                                        handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                    }
                                 }
                             } else {
                                 SwipeActionComponent(identifier: "trash", horizontalEdge: .right, backgroundColor: UIColor(red: 0.996, green: 0.271, blue: 0.227, alpha: 1.0)) {
@@ -203,7 +209,9 @@ class ViewController: UIViewController {
                                             .textColor(.white)
                                     }
                                 } actionHandler: { [unowned self] completion, action, form in
-                                    handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                    Task { @MainActor in
+                                        handlerEmail(action, offset: offset, completion: completion, eventForm: form)
+                                    }
                                 }
                             }
                         }
@@ -287,7 +295,9 @@ class ViewController: UIViewController {
                 if form == .alert {
                     completion(.close)
                 } else {
-                    completionAfterHandler = completion
+                    Task { @MainActor in
+                        completionAfterHandler = completion
+                    }
                 }
             }
         )
@@ -378,8 +388,10 @@ class ViewController: UIViewController {
             completion(.close)
         } else if action.identifier == "trash" {
             if eventForm == .expanded || eventForm == .alert {
-                let removed: () -> Void = { [unowned self] in
-                    emailData.remove(at: offset)
+                let removed: @Sendable () -> Void = { [unowned self] in
+                    Task { @MainActor in
+                        emailData.remove(at: offset)
+                    }
                 }
                 completion(.expanded(completed: removed))
             } else {
