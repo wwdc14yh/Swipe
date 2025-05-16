@@ -1,14 +1,15 @@
 {
+  "originHash" : "652a84251c817a8c3f3794ff8a6487d0e0a4ec533d43bab0178014317cb869de",
   "pins" : [
     {
       "identity" : "uicomponent",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lkzhao/UIComponent.git",
       "state" : {
-        "revision" : "a88e30f820a8efaabb94062d1515349a9dad2a5b",
-        "version" : "3.0.5"
+        "revision" : "187c640f41a513f495ea5650be3cf9896e0ee0c5",
+        "version" : "4.2.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

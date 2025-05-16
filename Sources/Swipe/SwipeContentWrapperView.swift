@@ -79,7 +79,7 @@ final class SwipeContentWrapperView: UIView {
                 handlerTap: { actionTapHandler($0, .tap) }
             )
         }
-        let sizes = views.map { floor($0.sizeThatFits(CGSize(width: .infinity, height: 0.0)).width) }
+        let sizes = views.map { floor($0.sizeThatFits(CGSize(width: .infinity, height: CGFloat.infinity)).width) }
         self.sizes = sizes
         self.views = views
         preferredContentWidth = sizes.reduce(0) { $0 + $1 }

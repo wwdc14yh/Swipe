@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "UIComponentSwipe", targets: ["UIComponentSwipe"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/lkzhao/UIComponent.git", .upToNextMajor(from: "3.0.0"))
+        .package(url: "https://github.com/lkzhao/UIComponent.git", .upToNextMajor(from: "4.0.0"))
     ],
     targets: [
         .target(name: "Swipe"),

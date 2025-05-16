@@ -59,13 +59,13 @@ public struct SwipeRenderNode: @preconcurrency RenderNode {
     public func updateView(_ view: SwipeView) {
         view.config = config
         view.actions = actions
-        (view.contentView as! ComponentView).engine.reloadWithExisting(component: component, renderNode: content)
+        view.contentView.componentEngine.reloadWithExisting(component: component, renderNode: content)
     }
 
     @MainActor
     public func makeView() -> SwipeView {
         let componentView = ComponentView()
-        componentView.engine.reloadWithExisting(component: component, renderNode: content)
+        componentView.componentEngine.reloadWithExisting(component: component, renderNode: content)
         return .init(contentView: componentView)
     }
 }

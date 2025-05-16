@@ -76,12 +76,6 @@ public extension SwipeAction {
     }
 }
 
-extension SwipeAction {
-    static func == (lhs: any SwipeAction, rhs: any SwipeAction) -> Bool {
-        lhs.identifier == rhs.identifier && lhs.horizontalEdge == rhs.horizontalEdge
-    }
-}
-
 @resultBuilder
 public enum SwipeActionBuilder {
     public static func buildExpression(_ expression: any SwipeAction) -> [any SwipeAction] {
