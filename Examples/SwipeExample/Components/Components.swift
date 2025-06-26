@@ -7,7 +7,7 @@
 
 import Swipe
 import UIKit
-@preconcurrency import UIComponent
+import UIComponent
 import UIComponentSwipe
 
 extension SwipeActionComponent {
@@ -29,29 +29,30 @@ extension SwipeActionComponent {
 }
 
 struct Cell: ComponentBuilder {
+    
     let title: String
     let subtitle: String
     init(title: String = "", subtitle: String = "") {
         self.title = title
         self.subtitle = subtitle
     }
-
-    func build() -> some Component {
-        MainActor.assumeIsolated {
-            VStack(spacing: 5, alignItems: .start) {
-                if !title.isEmpty {
-                    Text(title, font: .systemFont(ofSize: 18, weight: .semibold))
-                }
-                if !subtitle.isEmpty {
-                    Text(subtitle, font: .systemFont(ofSize: 15, weight: .regular))
-                        .textColor(.secondaryLabel)
-                }
+    
+    @MainActor
+    @preconcurrency
+    public func build() -> some Component {
+        VStack(spacing: 5, alignItems: .start) {
+            if !title.isEmpty {
+                Text(title, font: .systemFont(ofSize: 18, weight: .semibold))
             }
-            .inset(15)
-            .minSize(height: 44)
-            .id(title + subtitle)
-            .reuseStrategy(.key("cell"))
+            if !subtitle.isEmpty {
+                Text(subtitle, font: .systemFont(ofSize: 15, weight: .regular))
+                    .textColor(.secondaryLabel)
+            }
         }
+        .inset(15)
+        .minSize(height: 44)
+        .id(title + subtitle)
+        .reuseStrategy(.key("cell"))
     }
 }
 
@@ -89,86 +90,87 @@ struct Group: ComponentBuilder {
         self.body = body()
     }
 
+    @MainActor
+    @preconcurrency
     func build() -> some Component {
-        MainActor.assumeIsolated {
+        VStack(alignItems: .stretch) {
+            title
+                .inset(top: 15, left: 15, bottom: 10, right: 0)
             VStack(alignItems: .stretch) {
-                title
-                    .inset(top: 15, left: 15, bottom: 10, right: 0)
-                VStack(alignItems: .stretch) {
-                    for (offset, component) in body.enumerated() {
-                        var maskedCorners: CACornerMask {
-                            if body.count == 1 {
-                                return [.layerMinXMaxYCorner, .layerMaxXMaxYCorner, .layerMinXMinYCorner, .layerMaxXMinYCorner]
-                            } else if offset == body.count - 1 {
-                                return [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-                            } else if offset == 0 {
-                                return [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-                            } else {
-                                return []
-                            }
+                for (offset, component) in body.enumerated() {
+                    var maskedCorners: CACornerMask {
+                        if body.count == 1 {
+                            return [.layerMinXMaxYCorner, .layerMaxXMaxYCorner, .layerMinXMinYCorner, .layerMaxXMinYCorner]
+                        } else if offset == body.count - 1 {
+                            return [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                        } else if offset == 0 {
+                            return [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                        } else {
+                            return []
                         }
-                        component
-                            .eraseToAnyComponent()
-                            .clipsToBounds(true)
-                            .with(\.layer.cornerRadius, maskedCorners.isEmpty ? 0 : cornerRadius)
-                            .with(\.layer.cornerCurve, .continuous)
-                            .with(\.layer.maskedCorners, maskedCorners)
                     }
-                }
-                .background {
-                    ViewComponent()
-                        .backgroundColor(backgroundColor)
-                        .with(\.layer.cornerRadius, cornerRadius)
+                    component
+                        .eraseToAnyComponent()
+                        .clipsToBounds(true)
+                        .with(\.layer.cornerRadius, maskedCorners.isEmpty ? 0 : cornerRadius)
                         .with(\.layer.cornerCurve, .continuous)
-                }
-                if let footnode {
-                    footnode
-                        .inset(top: 15, left: 15, bottom: 10, right: 0)
+                        .with(\.layer.maskedCorners, maskedCorners)
                 }
             }
-            .size(width: .fill)
+            .background {
+                ViewComponent()
+                    .backgroundColor(backgroundColor)
+                    .with(\.layer.cornerRadius, cornerRadius)
+                    .with(\.layer.cornerCurve, .continuous)
+            }
+            if let footnode {
+                footnode
+                    .inset(top: 15, left: 15, bottom: 10, right: 0)
+            }
         }
+        .size(width: .fill)
     }
 }
 
 struct EmailComponent: ComponentBuilder {
     let data: EmailData
+    
+    @MainActor
+    @preconcurrency
     func build() -> some Component {
-        MainActor.assumeIsolated {
-            HStack(alignItems: .stretch) {
-                VStack(justifyContent: .start, alignItems: .center) {
-                    if data.unread {
-                        Space(width: 10, height: 10)
-                            .backgroundColor(UIColor(red: 0.008, green: 0.475, blue: 0.996, alpha: 1.0))
-                            .roundedCorner()
-                            .inset(top: 5)
-                    }
+        HStack(alignItems: .stretch) {
+            VStack(justifyContent: .start, alignItems: .center) {
+                if data.unread {
+                    Space(width: 10, height: 10)
+                        .backgroundColor(UIColor(red: 0.008, green: 0.475, blue: 0.996, alpha: 1.0))
+                        .roundedCorner()
+                        .inset(top: 5)
                 }
-                .size(width: 30)
-                VStack(spacing: 2) {
-                    HStack {
-                        Text(data.from, font: .systemFont(ofSize: 16, weight: .semibold), numberOfLines: 1, lineBreakMode: .byTruncatingTail)
-                            .inset(right: 10)
-                            .flex()
-                        HStack(spacing: 5, alignItems: .center) {
-                            Text(data.date.formatted(), font: .systemFont(ofSize: 16, weight: .regular))
-                                .textColor(.secondaryLabel)
-                            Image(systemName: "chevron.right")
-                                .tintColor(.secondaryLabel)
-                                .transform(.identity.scaledBy(x: 0.8, y: 0.8))
-                        }
-                    }
-                    Text(data.subject, font: .systemFont(ofSize: 15, weight: .regular), numberOfLines: 1, lineBreakMode: .byTruncatingTail)
-                    Text(data.body, font: .systemFont(ofSize: 15, weight: .regular), numberOfLines: 2, lineBreakMode: .byTruncatingTail)
-                        .textColor(.secondaryLabel)
-                }
-                .flex()
             }
-            .size(width: .fill)
-            .inset(left: 0, rest: 10)
-            .id(data.id)
-            .reuseStrategy(.key("email"))
+            .size(width: 30)
+            VStack(spacing: 2) {
+                HStack {
+                    Text(data.from, font: .systemFont(ofSize: 16, weight: .semibold), numberOfLines: 1, lineBreakMode: .byTruncatingTail)
+                        .inset(right: 10)
+                        .flex()
+                    HStack(spacing: 5, alignItems: .center) {
+                        Text(data.date.formatted(), font: .systemFont(ofSize: 16, weight: .regular))
+                            .textColor(.secondaryLabel)
+                        Image(systemName: "chevron.right")
+                            .tintColor(.secondaryLabel)
+                            .transform(.identity.scaledBy(x: 0.8, y: 0.8))
+                    }
+                }
+                Text(data.subject, font: .systemFont(ofSize: 15, weight: .regular), numberOfLines: 1, lineBreakMode: .byTruncatingTail)
+                Text(data.body, font: .systemFont(ofSize: 15, weight: .regular), numberOfLines: 2, lineBreakMode: .byTruncatingTail)
+                    .textColor(.secondaryLabel)
+            }
+            .flex()
         }
+        .size(width: .fill)
+        .inset(left: 0, rest: 10)
+        .id(data.id)
+        .reuseStrategy(.key("email"))
     }
 }
 
@@ -183,25 +185,27 @@ struct SwipeActionContent: ComponentBuilder {
         case ltr
     }
 
+    @MainActor
+    @preconcurrency
     var combineComponent: [any Component] {
         func build(@ComponentArrayBuilder _ build: () -> [any Component]) -> [any Component] {
             return build()
         }
-        return MainActor.assumeIsolated {
-            build {
-                if let image {
-                    Image(image)
-                        .tintColor(tintColor)
-                }
-                if !text.isEmpty {
-                    Text(text)
-                        .font(.systemFont(ofSize: 16))
-                        .textColor(tintColor)
-                }
+        return build {
+            if let image {
+                Image(image)
+                    .tintColor(tintColor)
+            }
+            if !text.isEmpty {
+                Text(text)
+                    .font(.systemFont(ofSize: 16))
+                    .textColor(tintColor)
             }
         }
     }
 
+    @MainActor
+    @preconcurrency
     func build() -> some Component {
         ZStack {
             switch alignment {
@@ -212,21 +216,5 @@ struct SwipeActionContent: ComponentBuilder {
             }
         }
         .inset(h: 25)
-    }
-}
-
-struct ComponentSendable: Component, Sendable {
-    public let content: any Component
-    /// Initializes a new type-erased component with the provided component.
-    /// - Parameter content: The component to be type-erased.
-    public init(content: any Component) {
-        self.content = content
-    }
-    
-    /// Lays out the component within the given constraints and returns a type-erased render node.
-    /// - Parameter constraint: The constraints to use for laying out the component.
-    /// - Returns: A type-erased `AnyRenderNode` representing the layout of the component.
-    public func layout(_ constraint: Constraint) -> AnyRenderNode {
-        content.layout(constraint).eraseToAnyRenderNode()
     }
 }

@@ -45,6 +45,8 @@ public struct SwipeActionComponent: SwipeAction {
         )
     }
 
+    @MainActor
+    @preconcurrency
     public init(
         identifier: String,
         horizontalEdge: SwipeHorizontalEdge,
@@ -60,9 +62,7 @@ public struct SwipeActionComponent: SwipeAction {
             horizontalEdge: horizontalEdge,
             bodyBuild: bodyBuild,
             backgroundBuild: {
-                MainActor.assumeIsolated {
-                    Space().backgroundColor(backgroundColor)
-                }
+                Space().backgroundColor(backgroundColor)
             },
             alertBuild: alertBuild,
             expandedBuild: expandedBuild,
