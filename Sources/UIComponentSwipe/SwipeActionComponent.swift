@@ -12,7 +12,7 @@ public struct SwipeActionComponent: SwipeAction {
     }
 
     public typealias ConfigHighlightView = @MainActor @Sendable (_ highlightView: UIView, _ isHighlighted: Bool) -> Void
-    public typealias ActionHandler = @Sendable (_ completion: @escaping @Sendable CompletionAfterHandler, _ action: any SwipeAction, _ form: SwipeActionEventFrom) -> Void
+    public typealias ActionHandler = @Sendable (_ completion: @escaping @Sendable CompletionAfterHandler, _ action: any SwipeAction, _ from: SwipeActionEventFrom) -> Void
     public typealias ComponentProvider = () -> any Component
 
     public let identifier: String
